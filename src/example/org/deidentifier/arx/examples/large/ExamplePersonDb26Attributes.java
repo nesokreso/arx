@@ -1,6 +1,6 @@
 /*
  * ARX: Powerful Data Anonymization
- * Copyright 2012 - 2018 Fabian Prasser and contributors
+ * Copyright 2020 Fabian Prasser and contributors
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,13 +20,11 @@ package org.deidentifier.arx.examples.large;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import org.deidentifier.arx.AttributeType;
 import org.deidentifier.arx.AttributeType.Hierarchy;
 import org.deidentifier.arx.AttributeType.Hierarchy.DefaultHierarchy;
-import org.deidentifier.arx.Data;
 import org.deidentifier.arx.DataType;
 
 /**
@@ -49,23 +47,10 @@ public class ExamplePersonDb26Attributes extends ExamplePerson {
 		Class.forName("oracle.jdbc.driver.OracleDriver");
 		Connection con = DriverManager.getConnection(dbUrl, dbUser, dbPw);
 		try {
-			defaultData = Data.create();
-			defaultData.add(ID, ORGANISATION_NAME, ORGANISATION_ADDITIONAL_NAME, DEPARTMENT, OFFICIAL_NAME, ORIGINAL_NAME,
-					FIRST_NAME, DATE_OF_BIRTH, PLACE_OF_ORIGIN_NAME, SECOND_PLACE_OF_ORIGIN_NAME,
-					PLACE_OF_BIRTH_COUNTRY, SEX, LANGUAGE, NATIONALITY, COUNTRY_OF_ORIGIN, DATE_OF_DEATH, REMARK,
-					LAST_MEDICAL_CHECKUP, NEXT_MEDICAL_CHECKUP, PHONE_NUMBER, CELL_NUMBER, EMAIL, GUARDIANSHIP,
-					CURRENT_TOWN, CURRENT_ZIP_CODE, MANDATOR);
-			ResultSet rs = selectData(con);
-			while (rs.next()) {
-				defaultData.add(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5),
-						rs.getString(6), rs.getString(7), formatIvzDate(rs.getDate(8)), rs.getString(9),
-						rs.getString(10), rs.getString(11), rs.getString(12), rs.getString(13), rs.getString(14),
-						rs.getString(15), formatIvzDate(rs.getDate(16)), rs.getString(17),
-						formatIvzDate(rs.getDate(18)), formatIvzDate(rs.getDate(19)), rs.getString(20),
-						rs.getString(21), rs.getString(22), rs.getString(23), rs.getString(24), rs.getString(25),
-						rs.getString(26));
-			}
+			dbInit26Attributes(con);
 			System.out.print("------After data PREPARATION: " + LocalDateTime.now());
+			
+			setAverageReidentificationRisk();
 			
 			defaultData.getDefinition().setAttributeType(ID, AttributeType.INSENSITIVE_ATTRIBUTE);
 			defaultData.getDefinition().setDataType(ID, DataType.INTEGER);
@@ -91,11 +76,6 @@ public class ExamplePersonDb26Attributes extends ExamplePerson {
 			defaultData.getDefinition().setDataType(SEX, DataType.STRING);
 			defaultData.getDefinition().setHierarchy(SEX, sex);
 
-			// Perform risk analysis
-			System.out.println("\n - Input data");
-			print(defaultData.getHandle());
-
-			setKAnonymity();
 			runAnonymization(defaultData);
 			printResults(defaultData);
 			con.close();

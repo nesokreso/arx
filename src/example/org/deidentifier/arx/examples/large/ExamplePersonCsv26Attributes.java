@@ -18,7 +18,6 @@
 package org.deidentifier.arx.examples.large;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 
 import org.deidentifier.arx.AttributeType;
@@ -42,37 +41,8 @@ public class ExamplePersonCsv26Attributes extends ExamplePerson {
 	 */
 	public static void main(String[] args) throws IOException, ClassNotFoundException {
 		try {
-			// Small data input
-			// DataSource source = DataSource.createCSVSource("data/21_persons.csv", StandardCharsets.UTF_8, ';', true);
-			// Large data input
-			DataSource source = DataSource.createCSVSource("data/257k_persons.csv", StandardCharsets.UTF_8, ';', true);
-			source.addColumn(ID, DataType.STRING);
-			source.addColumn(ORGANISATION_NAME, DataType.STRING);
-			source.addColumn(ORGANISATION_ADDITIONAL_NAME, DataType.STRING);
-			source.addColumn(DEPARTMENT, DataType.STRING);
-			source.addColumn(OFFICIAL_NAME, DataType.STRING);
-			source.addColumn(ORIGINAL_NAME, DataType.STRING);
-			source.addColumn(FIRST_NAME, DataType.STRING);
-			source.addColumn(DATE_OF_BIRTH, DataType.STRING);
-			source.addColumn(PLACE_OF_ORIGIN_NAME, DataType.STRING);
-			source.addColumn(SECOND_PLACE_OF_ORIGIN_NAME, DataType.STRING);
-			source.addColumn(PLACE_OF_BIRTH_COUNTRY, DataType.STRING);
-			source.addColumn(SEX, DataType.STRING);
-			source.addColumn(LANGUAGE, DataType.STRING);
-			source.addColumn(NATIONALITY, DataType.STRING);
-			source.addColumn(COUNTRY_OF_ORIGIN, DataType.STRING);
-			source.addColumn(DATE_OF_DEATH, DataType.STRING);
-			source.addColumn(REMARK, DataType.STRING);
-			source.addColumn(LAST_MEDICAL_CHECKUP, DataType.STRING);
-			source.addColumn(NEXT_MEDICAL_CHECKUP, DataType.STRING);
-			source.addColumn(PHONE_NUMBER, DataType.STRING);
-			source.addColumn(CELL_NUMBER, DataType.STRING);
-			source.addColumn(EMAIL, DataType.STRING);
-			source.addColumn(GUARDIANSHIP, DataType.STRING);
-			source.addColumn(CURRENT_TOWN, DataType.STRING);
-			source.addColumn(CURRENT_ZIP_CODE, DataType.STRING);
-			source.addColumn(MANDATOR, DataType.STRING);
-			
+			DataSource source = csvInit26Attributes();
+
 			// Create data object
 			Data data = Data.create(source);
 			System.out.println("------After data PREPARATION: " + LocalDateTime.now());
@@ -85,18 +55,19 @@ public class ExamplePersonCsv26Attributes extends ExamplePerson {
 			createHierarchy(data, ORGANISATION_NAME);
 			createHierarchy(data, DEPARTMENT);
 			createHierarchy(data, DATE_OF_BIRTH);
-			
+
 			// Perform risk analysis
 			System.out.println("\n - Input data");
 			print(data.getHandle());
 
-//			setKAnonymity();
-			setEDDifferentialPrivacy();
+//			setEDDifferentialPrivacy(Metric.createClassificationMetric(), 2d, 1d, 1E-5d, 5);
+//			setEDDifferentialPrivacy(Metric.createClassificationMetric(), 2d, 1d, 0.1, 5);
+			setKAnonymity();
 			runAnonymization(data);
 			printResults(data);
 		} catch (Exception e) {
 			System.out.println(e);
-		} 
+		}
 	}
 
 }

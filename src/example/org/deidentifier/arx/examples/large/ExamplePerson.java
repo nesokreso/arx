@@ -18,6 +18,7 @@
 package org.deidentifier.arx.examples.large;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -34,10 +35,10 @@ import org.deidentifier.arx.ARXAnonymizer;
 import org.deidentifier.arx.ARXConfiguration;
 import org.deidentifier.arx.ARXResult;
 import org.deidentifier.arx.AttributeType;
-import org.deidentifier.arx.DataGeneralizationScheme;
 import org.deidentifier.arx.Data.DefaultData;
-import org.deidentifier.arx.DataGeneralizationScheme.GeneralizationDegree;
+import org.deidentifier.arx.DataSource;
 import org.deidentifier.arx.DataType;
+import org.deidentifier.arx.ARXConfiguration.SearchStepSemantics;
 import org.deidentifier.arx.AttributeType.MicroAggregationFunction;
 import org.deidentifier.arx.Data;
 import org.deidentifier.arx.aggregates.HierarchyBuilderRedactionBased;
@@ -46,6 +47,7 @@ import org.deidentifier.arx.criteria.AverageReidentificationRisk;
 import org.deidentifier.arx.criteria.EDDifferentialPrivacy;
 import org.deidentifier.arx.criteria.KAnonymity;
 import org.deidentifier.arx.examples.Example;
+import org.deidentifier.arx.metric.Metric;
 
 /**
  * This class implements an example on how to use the API by directly providing
@@ -88,28 +90,98 @@ public class ExamplePerson extends Example {
     protected static ARXConfiguration config = ARXConfiguration.create();
     protected static ARXResult result;
     protected static final SimpleDateFormat arxFormat = new SimpleDateFormat("dd.MM.yyyy");
+    protected static final String CSV_SMALL = "data/21_persons.csv";
+    protected static final String CSV_LARGE = "data/257k_persons.csv";
     protected static final String ROWNUM = "100";
     protected static final String TABLE = "person_arx";
-    protected static final String dbUrl = "jdbc:oracle:thin:@localhost:1521/IVZPDB";
+    protected static final String dbUrl = "jdbc:oracle:thin:@172.18.60.83:1521/IVZPDB";
     protected static final String dbUser = "ARX";
     protected static final String dbPw = "ARX";
+    protected static boolean syntactic;
+    
+    
+    protected static void dbInit8Attributes(Connection con) throws SQLException {
+		defaultData = Data.create();
+		defaultData.add(ID, ORGANISATION_NAME, ORGANISATION_ADDITIONAL_NAME, DEPARTMENT, OFFICIAL_NAME, ORIGINAL_NAME,
+				FIRST_NAME, DATE_OF_BIRTH);
+		Statement stmt = con.createStatement();
+        System.out.println("-----Before select EXECUTION: " + LocalDateTime.now());
+        ResultSet rs = stmt.executeQuery(
+                "SELECT ID, ORGANISATION_NAME, ORGANISATION_ADDITIONAL_NAME, DEPARTMENT, OFFICIAL_NAME, ORIGINAL_NAME, FIRST_NAME, DATE_OF_BIRTH FROM "
+                        + TABLE + " WHERE rownum <= " + ROWNUM);
+        System.out.println("------After select EXECUTION: " + LocalDateTime.now());
+		while (rs.next()) {
+			defaultData.add(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5),
+					rs.getString(6), rs.getString(7), formatIvzDate(rs.getDate(8)));
+		}
+		printInput();
+	}
 
-    protected static ResultSet selectData(Connection con) throws SQLException {
-        Statement stmt = con.createStatement();
+    protected static void dbInit26Attributes(Connection con) throws SQLException {
+		defaultData = Data.create();
+		defaultData.add(ID, ORGANISATION_NAME, ORGANISATION_ADDITIONAL_NAME, DEPARTMENT, OFFICIAL_NAME, ORIGINAL_NAME,
+				FIRST_NAME, DATE_OF_BIRTH, PLACE_OF_ORIGIN_NAME, SECOND_PLACE_OF_ORIGIN_NAME,
+				PLACE_OF_BIRTH_COUNTRY, SEX, LANGUAGE, NATIONALITY, COUNTRY_OF_ORIGIN, DATE_OF_DEATH, REMARK,
+				LAST_MEDICAL_CHECKUP, NEXT_MEDICAL_CHECKUP, PHONE_NUMBER, CELL_NUMBER, EMAIL, GUARDIANSHIP,
+				CURRENT_TOWN, CURRENT_ZIP_CODE, MANDATOR);
+		Statement stmt = con.createStatement();
         System.out.println("-----Before select EXECUTION: " + LocalDateTime.now());
         ResultSet rs = stmt.executeQuery(
                 "SELECT ID, ORGANISATION_NAME, ORGANISATION_ADDITIONAL_NAME, DEPARTMENT, OFFICIAL_NAME, ORIGINAL_NAME, FIRST_NAME, DATE_OF_BIRTH, PLACE_OF_ORIGIN_NAME, "
                         + "SECOND_PLACE_OF_ORIGIN_NAME, PLACE_OF_BIRTH_COUNTRY, SEX, LANGUAGE, NATIONALITY, COUNTRY_OF_ORIGIN, DATE_OF_DEATH, REMARK, LAST_MEDICAL_CHECKUP, "
                         + "NEXT_MEDICAL_CHECKUP, PHONE_NUMBER, CELL_NUMBER, EMAIL, GUARDIANSHIP, CURRENT_TOWN, CURRENT_ZIP_CODE, MANDATOR FROM "
-                        + TABLE
-                        + " WHERE rownum <= " + ROWNUM);
+                        + TABLE + " WHERE rownum <= " + ROWNUM);
         System.out.println("------After select EXECUTION: " + LocalDateTime.now());
-        return rs;
-    }
-
+		while (rs.next()) {
+			defaultData.add(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5),
+					rs.getString(6), rs.getString(7), formatIvzDate(rs.getDate(8)), rs.getString(9),
+					rs.getString(10), rs.getString(11), rs.getString(12), rs.getString(13), rs.getString(14),
+					rs.getString(15), formatIvzDate(rs.getDate(16)), rs.getString(17),
+					formatIvzDate(rs.getDate(18)), formatIvzDate(rs.getDate(19)), rs.getString(20),
+					rs.getString(21), rs.getString(22), rs.getString(23), rs.getString(24), rs.getString(25),
+					rs.getString(26));
+		}
+		printInput();
+	}
+    
+    protected static DataSource csvInit26Attributes() {
+    	DataSource source;
+    	// Small data input
+    	//		source = DataSource.createCSVSource(CSV_SMALL, StandardCharsets.UTF_8, ';', true);
+		// Large data input
+		source = DataSource.createCSVSource(CSV_LARGE, StandardCharsets.UTF_8, ';', true);
+		source.addColumn(ID, DataType.STRING);
+		source.addColumn(ORGANISATION_NAME, DataType.STRING);
+		source.addColumn(ORGANISATION_ADDITIONAL_NAME, DataType.STRING);
+		source.addColumn(DEPARTMENT, DataType.STRING);
+		source.addColumn(OFFICIAL_NAME, DataType.STRING);
+		source.addColumn(ORIGINAL_NAME, DataType.STRING);
+		source.addColumn(FIRST_NAME, DataType.STRING);
+		source.addColumn(DATE_OF_BIRTH, DataType.STRING);
+		source.addColumn(PLACE_OF_ORIGIN_NAME, DataType.STRING);
+		source.addColumn(SECOND_PLACE_OF_ORIGIN_NAME, DataType.STRING);
+		source.addColumn(PLACE_OF_BIRTH_COUNTRY, DataType.STRING);
+		source.addColumn(SEX, DataType.STRING);
+		source.addColumn(LANGUAGE, DataType.STRING);
+		source.addColumn(NATIONALITY, DataType.STRING);
+		source.addColumn(COUNTRY_OF_ORIGIN, DataType.STRING);
+		source.addColumn(DATE_OF_DEATH, DataType.STRING);
+		source.addColumn(REMARK, DataType.STRING);
+		source.addColumn(LAST_MEDICAL_CHECKUP, DataType.STRING);
+		source.addColumn(NEXT_MEDICAL_CHECKUP, DataType.STRING);
+		source.addColumn(PHONE_NUMBER, DataType.STRING);
+		source.addColumn(CELL_NUMBER, DataType.STRING);
+		source.addColumn(EMAIL, DataType.STRING);
+		source.addColumn(GUARDIANSHIP, DataType.STRING);
+		source.addColumn(CURRENT_TOWN, DataType.STRING);
+		source.addColumn(CURRENT_ZIP_CODE, DataType.STRING);
+		source.addColumn(MANDATOR, DataType.STRING);
+		return source;
+	}
+    
     protected static ARXConfiguration setKAnonymity() {
     	config = ARXConfiguration.create();
-		config.addPrivacyModel(new KAnonymity(4));
+		config.addPrivacyModel(new KAnonymity(7));
 		config.setSuppressionLimit(1d);
         config.setHeuristicSearchStepLimit(1000);
         config.setHeuristicSearchEnabled(true);
@@ -117,15 +189,20 @@ public class ExamplePerson extends Example {
     }
     
     protected static ARXConfiguration setAverageReidentificationRisk() {
-    	config.addPrivacyModel(new AverageReidentificationRisk(0.5d));
+    	config = ARXConfiguration.create();
+    	config.addPrivacyModel(new AverageReidentificationRisk(0.99d));
 		return config;
     }
     
-    protected static ARXConfiguration setEDDifferentialPrivacy() {
-    	EDDifferentialPrivacy criterion = new EDDifferentialPrivacy(2d, 0.00001d,
-                DataGeneralizationScheme.create(defaultData, GeneralizationDegree.MEDIUM));
-    	config.addPrivacyModel(criterion);
-		return config;
+    protected static ARXConfiguration setEDDifferentialPrivacy(Metric<?> metric, double epsilon, double searchBudget, double delta, int searchSteps) {
+    	config = ARXConfiguration.create(1d, metric);
+    	config.addPrivacyModel(new EDDifferentialPrivacy(epsilon, delta, null, true));
+        config.setDPSearchBudget(searchBudget);
+        config.setHeuristicSearchStepLimit(searchSteps, SearchStepSemantics.EXPANSIONS);
+        defaultData.getDefinition().setResponseVariable(SEX, true);
+        defaultData.getDefinition().setResponseVariable(OFFICIAL_NAME, true);
+        defaultData.getDefinition().setResponseVariable(FIRST_NAME, true);
+        return config;
     }
     
     protected static void runAnonymization(Data data) throws IOException {
@@ -143,19 +220,31 @@ public class ExamplePerson extends Example {
         return builder;
     }
     
-    protected static void createDateAnonymization(Data data, String attribute) {
-		data.getDefinition().setAttributeType(attribute, AttributeType.QUASI_IDENTIFYING_ATTRIBUTE);
-		data.getDefinition().setDataType(attribute, DataType.DATE);
+    protected static void createDateAnonymizationSyntactic(Data data, String attribute) {
+		createDateAnonymization(data, attribute);
 		data.getDefinition().setAttributeType(attribute, MicroAggregationFunction.createArithmeticMean());
 	}
 
+    protected static void createDateAnonymization(Data data, String attribute) {
+		data.getDefinition().setAttributeType(attribute, AttributeType.QUASI_IDENTIFYING_ATTRIBUTE);
+		data.getDefinition().setDataType(attribute, DataType.DATE);
+	}
+    
+    protected static void printInput() {
+		System.out.println("------------------Input data: ");
+    	Iterator<String[]> inputIterator = defaultData.getHandle().iterator();
+    	for(int i = 0; i < 20; i++) {
+    		System.out.println(Arrays.toString(inputIterator.next()));
+		}
+	}
+    
     protected static void printResults(Data data) {
 		// Print info
 		printResult(result, data);
 		System.out.println();
 		
 		// Process results
-		System.out.println(" - Transformed data:");
+		System.out.println("-------------Transformed data: ");
 		Iterator<String[]> transformed = result.getOutput(false).iterator();
 		for(int i = 0; i < 20; i++) {
 			System.out.print(" ");
