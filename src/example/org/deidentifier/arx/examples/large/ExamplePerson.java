@@ -91,14 +91,13 @@ public class ExamplePerson extends Example {
     protected static ARXResult result;
     protected static final SimpleDateFormat arxFormat = new SimpleDateFormat("dd.MM.yyyy");
     protected static final String CSV_SMALL = "data/21_persons.csv";
-    protected static final String CSV_LARGE = "data/257k_persons.csv";
+    protected static final String CSV_LARGE = "data/146k_persons.csv";
     protected static final String ROWNUM = "100";
     protected static final String TABLE = "person_arx";
     protected static final String dbUrl = "jdbc:oracle:thin:@172.18.60.83:1521/IVZPDB";
     protected static final String dbUser = "ARX";
     protected static final String dbPw = "ARX";
     protected static boolean syntactic;
-    
     
     protected static void dbInit8Attributes(Connection con) throws SQLException {
 		defaultData = Data.create();
@@ -114,7 +113,7 @@ public class ExamplePerson extends Example {
 			defaultData.add(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5),
 					rs.getString(6), rs.getString(7), formatIvzDate(rs.getDate(8)));
 		}
-		printInput();
+		printInput(defaultData);
 	}
 
     protected static void dbInit26Attributes(Connection con) throws SQLException {
@@ -141,23 +140,23 @@ public class ExamplePerson extends Example {
 					rs.getString(21), rs.getString(22), rs.getString(23), rs.getString(24), rs.getString(25),
 					rs.getString(26));
 		}
-		printInput();
+		printInput(defaultData);
 	}
     
-    protected static DataSource csvInit26Attributes() {
+    protected static Data csvInit26Attributes() throws IOException {
     	DataSource source;
     	// Small data input
-    	//		source = DataSource.createCSVSource(CSV_SMALL, StandardCharsets.UTF_8, ';', true);
+    	source = DataSource.createCSVSource(CSV_SMALL, StandardCharsets.UTF_8, ';', true);
 		// Large data input
-		source = DataSource.createCSVSource(CSV_LARGE, StandardCharsets.UTF_8, ';', true);
-		source.addColumn(ID, DataType.STRING);
+//		source = DataSource.createCSVSource(CSV_LARGE, StandardCharsets.UTF_8, ';', true);
+		source.addColumn(ID, DataType.INTEGER);
 		source.addColumn(ORGANISATION_NAME, DataType.STRING);
 		source.addColumn(ORGANISATION_ADDITIONAL_NAME, DataType.STRING);
 		source.addColumn(DEPARTMENT, DataType.STRING);
 		source.addColumn(OFFICIAL_NAME, DataType.STRING);
 		source.addColumn(ORIGINAL_NAME, DataType.STRING);
 		source.addColumn(FIRST_NAME, DataType.STRING);
-		source.addColumn(DATE_OF_BIRTH, DataType.STRING);
+		source.addColumn(DATE_OF_BIRTH, DataType.DATE);
 		source.addColumn(PLACE_OF_ORIGIN_NAME, DataType.STRING);
 		source.addColumn(SECOND_PLACE_OF_ORIGIN_NAME, DataType.STRING);
 		source.addColumn(PLACE_OF_BIRTH_COUNTRY, DataType.STRING);
@@ -165,32 +164,34 @@ public class ExamplePerson extends Example {
 		source.addColumn(LANGUAGE, DataType.STRING);
 		source.addColumn(NATIONALITY, DataType.STRING);
 		source.addColumn(COUNTRY_OF_ORIGIN, DataType.STRING);
-		source.addColumn(DATE_OF_DEATH, DataType.STRING);
+		source.addColumn(DATE_OF_DEATH, DataType.DATE);
 		source.addColumn(REMARK, DataType.STRING);
-		source.addColumn(LAST_MEDICAL_CHECKUP, DataType.STRING);
-		source.addColumn(NEXT_MEDICAL_CHECKUP, DataType.STRING);
+		source.addColumn(LAST_MEDICAL_CHECKUP, DataType.DATE);
+		source.addColumn(NEXT_MEDICAL_CHECKUP, DataType.DATE);
 		source.addColumn(PHONE_NUMBER, DataType.STRING);
 		source.addColumn(CELL_NUMBER, DataType.STRING);
 		source.addColumn(EMAIL, DataType.STRING);
 		source.addColumn(GUARDIANSHIP, DataType.STRING);
 		source.addColumn(CURRENT_TOWN, DataType.STRING);
-		source.addColumn(CURRENT_ZIP_CODE, DataType.STRING);
+		source.addColumn(CURRENT_ZIP_CODE, DataType.INTEGER);
 		source.addColumn(MANDATOR, DataType.STRING);
-		return source;
+		Data data = Data.create(source);
+		printInput(data);
+		return data;
 	}
     
     protected static ARXConfiguration setKAnonymity() {
     	config = ARXConfiguration.create();
-		config.addPrivacyModel(new KAnonymity(7));
-		config.setSuppressionLimit(1d);
-        config.setHeuristicSearchStepLimit(1000);
-        config.setHeuristicSearchEnabled(true);
+    	config.addPrivacyModel(new KAnonymity(4));
+        config.setSuppressionLimit(1d);
+        config.setQualityModel(Metric.createEntropyMetric());
+//		config.setSuppressionLimit(1d);
 		return config;
     }
     
     protected static ARXConfiguration setAverageReidentificationRisk() {
     	config = ARXConfiguration.create();
-    	config.addPrivacyModel(new AverageReidentificationRisk(0.99d));
+    	config.addPrivacyModel(new AverageReidentificationRisk(0.4d));
 		return config;
     }
     
@@ -230,9 +231,9 @@ public class ExamplePerson extends Example {
 		data.getDefinition().setDataType(attribute, DataType.DATE);
 	}
     
-    protected static void printInput() {
+    protected static void printInput(Data data) {
 		System.out.println("------------------Input data: ");
-    	Iterator<String[]> inputIterator = defaultData.getHandle().iterator();
+    	Iterator<String[]> inputIterator = data.getHandle().iterator();
     	for(int i = 0; i < 20; i++) {
     		System.out.println(Arrays.toString(inputIterator.next()));
 		}
