@@ -31,6 +31,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Random;
 
+import org.apache.commons.lang.RandomStringUtils;
 import org.deidentifier.arx.ARXAnonymizer;
 import org.deidentifier.arx.ARXConfiguration;
 import org.deidentifier.arx.ARXResult;
@@ -40,7 +41,11 @@ import org.deidentifier.arx.DataSource;
 import org.deidentifier.arx.DataType;
 import org.deidentifier.arx.AttributeType.MicroAggregationFunction;
 import org.deidentifier.arx.Data;
+import org.deidentifier.arx.aggregates.HierarchyBuilderIntervalBased;
 import org.deidentifier.arx.aggregates.HierarchyBuilderRedactionBased;
+import org.deidentifier.arx.aggregates.HierarchyBuilderGroupingBased.Level;
+import org.deidentifier.arx.aggregates.HierarchyBuilderIntervalBased.Interval;
+import org.deidentifier.arx.aggregates.HierarchyBuilderIntervalBased.Range;
 import org.deidentifier.arx.aggregates.HierarchyBuilderRedactionBased.Order;
 import org.deidentifier.arx.examples.Example;
 
@@ -50,9 +55,7 @@ import org.deidentifier.arx.examples.Example;
  * @author Nenad Jevdjenic
  */
 public class ExamplePerson extends Example {
-	/**
-	 * Definition of headers for input data
-	 */
+	/** Column names of person data input */
 	protected static final String ID = "ID";
 	protected static final String ORGANISATION_NAME = "ORGANISATION_NAME";
 	protected static final String ORGANISATION_ADDITIONAL_NAME = "ORGANISATION_ADDITIONAL_NAME";
@@ -79,15 +82,15 @@ public class ExamplePerson extends Example {
 	protected static final String CURRENT_TOWN = "CURRENT_TOWN";
 	protected static final String CURRENT_ZIP_CODE = "CURRENT_ZIP_CODE";
 	protected static final String MANDATOR = "MANDATOR";
-	// ARX specitfic classes
+	/** ARX specitfic classes */
 	protected static ARXAnonymizer anonymizer = new ARXAnonymizer();
 	protected static ARXConfiguration config;
 	protected static ARXResult result;
 	protected static final SimpleDateFormat arxFormat = new SimpleDateFormat("dd.MM.yyyy");
-	// CSV Input files
+	/** CSV Input files */
 	protected static final String CSV_SMALL = "data/21_persons.csv";
 	protected static final String CSV_LARGE = "data/146k_persons.csv";
-	// DB connection settings
+	/** DB connection settings */
 	protected static final String ROWNUM = "100";
 	protected static final String TABLE = "person_arx";
 	protected static final String dbUrl = "jdbc:oracle:thin:@172.18.60.83:1521/IVZPDB";
@@ -186,6 +189,11 @@ public class ExamplePerson extends Example {
 		return data;
 	}
 
+	/**
+	 * Anonymization method ARX
+	 * @param data
+	 * @throws IOException
+	 */
 	protected static void runAnonymization(Data data) throws IOException {
 		System.out.println("---Before data ANONYMIZATION: " + LocalDateTime.now());
 		anonymizer = new ARXAnonymizer();
@@ -200,6 +208,50 @@ public class ExamplePerson extends Example {
 		data.getDefinition().setAttributeType(attribute, builder);
 		data.getDefinition().setDataType(attribute, DataType.STRING);
 		return builder;
+	}
+	
+	protected static HierarchyBuilderIntervalBased<?> createZipCodeHierarchy(Data data, String attribute) {
+		HierarchyBuilderIntervalBased<Long> builderZipCode = HierarchyBuilderIntervalBased.create(DataType.INTEGER,
+		        new Range<Long>(0l, 0l, 0l),
+		        new Range<Long>(9999l, 9999l, 9999l));
+		
+		builderZipCode.setAggregateFunction(DataType.INTEGER.createAggregate().createIntervalFunction(true, false));
+		builderZipCode.addInterval(0l, 3000l);
+		builderZipCode.addInterval(3000l, 9999l);
+		
+		// Define grouping fanouts
+		builderZipCode.getLevel(0).addGroup(2);
+		builderZipCode.getLevel(1).addGroup(3);
+		
+		// Print specification
+        for (Interval<Long> interval1 : builderZipCode.getIntervals()) {
+            System.out.println(interval1);
+        }
+        
+        // Print specification
+        for (Level<Long> level : builderZipCode.getLevels()) {
+            System.out.println(level);
+        }
+        
+        // Print info about resulting levels
+        System.out.println("Resulting levels: " + Arrays.toString(builderZipCode.prepare(new String[] {
+                "3400",
+                "6123",
+                "7894",
+                "3400",
+                "7000",
+                "NULL"})));
+        
+        System.out.println("");
+        System.out.println("RESULT");
+        
+        // Print resulting hierarchy
+        printArray(builderZipCode.build().getHierarchy());
+        System.out.println("");
+        
+		data.getDefinition().setAttributeType(attribute, builderZipCode);
+		data.getDefinition().setDataType(attribute, DataType.INTEGER);
+		return builderZipCode;
 	}
 
 	protected static void createDateAnonymizationSyntactic(Data data, String attribute) {
@@ -229,7 +281,11 @@ public class ExamplePerson extends Example {
 		createHierarchy(data, FIRST_NAME);
 		return data;
 	}
-	
+
+	/**
+	 * Print data input before anonymization
+	 * @param data
+	 */
 	protected static void printInput(Data data) {
 		System.out.println("------------------Input data: ");
 		Iterator<String[]> inputIterator = data.getHandle().iterator();
@@ -238,6 +294,10 @@ public class ExamplePerson extends Example {
 		}
 	}
 
+	/**
+	 * Print data output after anonymization
+	 * @param data
+	 */
 	protected static void printResults(Data data) {
 		// Print info
 		printResult(result, data);
@@ -255,6 +315,12 @@ public class ExamplePerson extends Example {
 	protected static char generateRandomString() {
 		Random r = new Random();
 		char c = (char) (r.nextInt(26) + 'a');
+		return c;
+	}
+	
+	protected static char generateRandomInt() {
+		String r = RandomStringUtils.randomNumeric(10);
+		char c = r.charAt(0);
 		return c;
 	}
 

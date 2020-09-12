@@ -20,6 +20,9 @@ package org.deidentifier.arx.examples.large;
 import java.time.LocalDateTime;
 import org.deidentifier.arx.ARXConfiguration;
 import org.deidentifier.arx.Data;
+import org.deidentifier.arx.DataType;
+import org.deidentifier.arx.aggregates.HierarchyBuilderRedactionBased;
+import org.deidentifier.arx.aggregates.HierarchyBuilderRedactionBased.Order;
 import org.deidentifier.arx.criteria.KAnonymity;
 import org.deidentifier.arx.metric.Metric;
 
@@ -36,12 +39,19 @@ public class ExamplePersonKAnonymity extends ExamplePerson {
 		try {
 			// Create data object
 			Data data = dbInit26Attributes();
+//			Data data = csvInit26Attributes();
+			
 			System.out.println("------After data PREPARATION: " + LocalDateTime.now());
 
 			data = setInsensitiveAttr(data);
 			data = setQuasiIdentifierNames(data);
 
-			createHierarchy(data, CURRENT_ZIP_CODE);
+//			createZipCodeHierarchy(data, CURRENT_ZIP_CODE);
+	        HierarchyBuilderRedactionBased<?> builder = HierarchyBuilderRedactionBased.create(Order.RIGHT_TO_LEFT,
+					Order.RIGHT_TO_LEFT, ' ', generateRandomInt());
+			data.getDefinition().setAttributeType(CURRENT_ZIP_CODE, builder);
+			data.getDefinition().setDataType(CURRENT_ZIP_CODE, DataType.INTEGER);
+			
 			createDateAnonymizationSyntactic(data, DATE_OF_BIRTH);
 			createDateAnonymizationSyntactic(data, DATE_OF_DEATH);
 			createDateAnonymizationSyntactic(data, LAST_MEDICAL_CHECKUP);
@@ -53,7 +63,6 @@ public class ExamplePersonKAnonymity extends ExamplePerson {
 			System.out.println(e);
 		}
 	}
-
 	
 	protected static ARXConfiguration setKAnonymity() {
 		config = ARXConfiguration.create();
