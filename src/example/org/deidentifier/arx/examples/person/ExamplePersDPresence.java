@@ -18,7 +18,6 @@
 package org.deidentifier.arx.examples.person;
 
 import org.deidentifier.arx.ARXConfiguration;
-import org.deidentifier.arx.AttributeType;
 import org.deidentifier.arx.Data;
 import org.deidentifier.arx.DataSubset;
 import org.deidentifier.arx.criteria.DPresence;
@@ -26,11 +25,11 @@ import org.deidentifier.arx.criteria.KAnonymity;
 import org.deidentifier.arx.metric.Metric;
 
 /**
- * This class represents an example for person data anonymized with L-Diversity.
+ * This class represents an example for person data anonymized with δ-Presence.
  *
  * @author Nenad Jevdjenic
  */
-public class ExamplePersDPresence extends ExamplePersonKAnonymity {
+public class ExamplePersDPresence extends ExamplePerson {
 	/**
 	 * Entry point.
 	 */
@@ -47,10 +46,8 @@ public class ExamplePersDPresence extends ExamplePersonKAnonymity {
 			subsetData = setInsensitiveAttr(subsetData);
 			subsetData = setQuasiIdentifierNames(subsetData);
 			createDateAnonymizationSyntactic(subsetData, DATE_OF_BIRTH);
-			
 			DataSubset subset = DataSubset.create(data, subsetData);
 	        
-	        data.getDefinition().setAttributeType(PHONE_NUMBER, AttributeType.SENSITIVE_ATTRIBUTE);
 	        config = ARXConfiguration.create(1d, Metric.createEntropyMetric());
 	        config.addPrivacyModel(new KAnonymity(2));
 	        config.addPrivacyModel(new DPresence(1d / 2d, 2d / 3d, subset));
