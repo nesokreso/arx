@@ -17,28 +17,26 @@
 
 package org.deidentifier.arx.examples.large;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 
+import org.deidentifier.arx.ARXConfiguration;
 import org.deidentifier.arx.AttributeType;
 import org.deidentifier.arx.Data;
 import org.deidentifier.arx.DataType;
+import org.deidentifier.arx.ARXConfiguration.SearchStepSemantics;
+import org.deidentifier.arx.criteria.EDDifferentialPrivacy;
+import org.deidentifier.arx.metric.Metric;
 
 /**
- * This class represents a test for an oracle db with 26 attributes.
+ * This class represents an example for person data anonymized with (ε,δ)-Differential Privacy.
  *
  * @author Nenad Jevdjenic
  */
-public class ExamplePersonKAnonymity26Attributes extends ExamplePerson {
+public class ExamplePersonEDDifferentialPrivacy extends ExamplePerson {
 	/**
 	 * Entry point.
-	 * 
-	 * @param args the arguments
-	 * @throws IOException
-	 * @throws ClassNotFoundException
-	 * @throws SQLException
 	 */
-	public static void main(String[] args) throws IOException, ClassNotFoundException {
+	public static void main(String[] args) {
 		try {
 			// Create data object
 			Data data = csvInit26Attributes();
@@ -57,32 +55,25 @@ public class ExamplePersonKAnonymity26Attributes extends ExamplePerson {
 			createHierarchy(data, SECOND_PLACE_OF_ORIGIN_NAME);
 			createHierarchy(data, PLACE_OF_BIRTH_COUNTRY);
 			createHierarchy(data, SEX);
-			createHierarchy(data, LANGUAGE);
-			createHierarchy(data, NATIONALITY);
-			createHierarchy(data, COUNTRY_OF_ORIGIN);
-			createHierarchy(data, REMARK);
-			createHierarchy(data, PHONE_NUMBER);
-			createHierarchy(data, CELL_NUMBER);
-			createHierarchy(data, EMAIL);
-			createHierarchy(data, GUARDIANSHIP);
-			createHierarchy(data, CURRENT_TOWN);
-			createHierarchy(data, MANDATOR);
+			
+			data.getDefinition().setResponseVariable(SEX, true);
+			data.getDefinition().setResponseVariable(OFFICIAL_NAME, true);
+			data.getDefinition().setResponseVariable(FIRST_NAME, true);
 
-			createHierarchy(data, CURRENT_ZIP_CODE);
-			createDateAnonymizationSyntactic(data, DATE_OF_BIRTH);
-			createDateAnonymizationSyntactic(data, DATE_OF_DEATH);
-			createDateAnonymizationSyntactic(data, LAST_MEDICAL_CHECKUP);
-			createDateAnonymizationSyntactic(data, NEXT_MEDICAL_CHECKUP);
-
-//			setEDDifferentialPrivacy(Metric.createClassificationMetric(), 2d, 1d, 1E-5d, 5);
-//			setEDDifferentialPrivacy(Metric.createClassificationMetric(), 2d, 1d, 0.1, 5);
-//			setAverageReidentificationRisk();
-			setKAnonymity();
+			setEDDifferentialPrivacy(Metric.createClassificationMetric(), 2d, 1d, 1E-5d, 5);
 			runAnonymization(data);
 			printResults(data);
 		} catch (Exception e) {
 			System.out.println(e);
 		}
 	}
-
+	
+	protected static ARXConfiguration setEDDifferentialPrivacy(Metric<?> metric, double epsilon, double searchBudget,
+			double delta, int searchSteps) {
+		config = ARXConfiguration.create(1d, metric);
+		config.addPrivacyModel(new EDDifferentialPrivacy(epsilon, delta, null, true));
+		config.setDPSearchBudget(searchBudget);
+		config.setHeuristicSearchStepLimit(searchSteps, SearchStepSemantics.EXPANSIONS);
+		return config;
+	}
 }

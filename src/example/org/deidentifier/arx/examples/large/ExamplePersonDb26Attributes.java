@@ -18,11 +18,10 @@
 package org.deidentifier.arx.examples.large;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import org.deidentifier.arx.AttributeType;
+import org.deidentifier.arx.Data;
 import org.deidentifier.arx.AttributeType.Hierarchy;
 import org.deidentifier.arx.AttributeType.Hierarchy.DefaultHierarchy;
 import org.deidentifier.arx.DataType;
@@ -44,46 +43,40 @@ public class ExamplePersonDb26Attributes extends ExamplePerson {
 	 * @throws SQLException
 	 */
 	public static void main(String[] args) throws IOException, SQLException, ClassNotFoundException {
-		Class.forName("oracle.jdbc.driver.OracleDriver");
-		Connection con = DriverManager.getConnection(dbUrl, dbUser, dbPw);
 		try {
-			dbInit26Attributes(con);
+			Data data = dbInit26Attributes();
 			System.out.print("------After data PREPARATION: " + LocalDateTime.now());
 			
-			setAverageReidentificationRisk();
+//			setAverageReidentificationRisk();
 			
-			defaultData.getDefinition().setAttributeType(ID, AttributeType.INSENSITIVE_ATTRIBUTE);
-			defaultData.getDefinition().setDataType(ID, DataType.INTEGER);
+			data.getDefinition().setAttributeType(ID, AttributeType.INSENSITIVE_ATTRIBUTE);
+			data.getDefinition().setDataType(ID, DataType.INTEGER);
 
-			createHierarchy(defaultData, FIRST_NAME);
-			createHierarchy(defaultData, OFFICIAL_NAME);
-			createHierarchy(defaultData, ORIGINAL_NAME);
-			createHierarchy(defaultData, ORGANISATION_NAME);
-			createHierarchy(defaultData, DEPARTMENT);
-			createHierarchy(defaultData, NATIONALITY);
+			createHierarchy(data, FIRST_NAME);
+			createHierarchy(data, OFFICIAL_NAME);
+			createHierarchy(data, ORIGINAL_NAME);
+			createHierarchy(data, ORGANISATION_NAME);
+			createHierarchy(data, DEPARTMENT);
+			createHierarchy(data, NATIONALITY);
 
-			createDateAnonymization(defaultData, DATE_OF_BIRTH);
-			createDateAnonymization(defaultData, DATE_OF_DEATH);
-			createDateAnonymization(defaultData, LAST_MEDICAL_CHECKUP);
-			createDateAnonymization(defaultData, NEXT_MEDICAL_CHECKUP);
+			createDateAnonymization(data, DATE_OF_BIRTH);
+			createDateAnonymization(data, DATE_OF_DEATH);
+			createDateAnonymization(data, LAST_MEDICAL_CHECKUP);
+			createDateAnonymization(data, NEXT_MEDICAL_CHECKUP);
 
 			DefaultHierarchy sex = Hierarchy.create();
 			sex.add("MALE", "FEMALE");
 			sex.add("FEMALE", "MALE");
 			sex.add("null", "MALE");
 			sex.add("NULL", "MALE");
-			defaultData.getDefinition().setAttributeType(SEX, sex);
-			defaultData.getDefinition().setDataType(SEX, DataType.STRING);
-			defaultData.getDefinition().setHierarchy(SEX, sex);
+			data.getDefinition().setAttributeType(SEX, sex);
+			data.getDefinition().setDataType(SEX, DataType.STRING);
+			data.getDefinition().setHierarchy(SEX, sex);
 
-			runAnonymization(defaultData);
-			printResults(defaultData);
-			con.close();
+			runAnonymization(data);
 		} catch (Exception e) {
 			System.out.println(e);
-		} finally {
-			con.close();
-		}
+		} 
 	}
 
 }
