@@ -155,9 +155,9 @@ public class ExamplePerson extends Example {
 	protected static Data csvInit26Attributes() throws IOException {
 		DataSource source;
 		// Small data input
-//		source = DataSource.createCSVSource(CSV_SMALL, StandardCharsets.UTF_8, ';', true);
+		source = DataSource.createCSVSource(CSV_SMALL, StandardCharsets.UTF_8, ';', true);
 		// Large data input
-		source = DataSource.createCSVSource(CSV_LARGE, StandardCharsets.UTF_8, ';', true);
+//		source = DataSource.createCSVSource(CSV_LARGE, StandardCharsets.UTF_8, ';', true);
 		source.addColumn(ID, DataType.INTEGER);
 		source.addColumn(ORGANISATION_NAME, DataType.STRING);
 		source.addColumn(ORGANISATION_ADDITIONAL_NAME, DataType.STRING);
@@ -306,7 +306,7 @@ public class ExamplePerson extends Example {
 		// Process results
 		System.out.println("-------------Transformed data: ");
 		Iterator<String[]> transformed = result.getOutput(false).iterator();
-		for (int i = 0; i < 100; i++) {
+		for (int i = 0; i < 20; i++) {
 			System.out.print(" ");
 			System.out.println(Arrays.toString(transformed.next()));
 		}

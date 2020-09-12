@@ -18,7 +18,12 @@
 package org.deidentifier.arx.examples.large;
 
 import java.time.LocalDateTime;
+
+import org.deidentifier.arx.AttributeType;
 import org.deidentifier.arx.Data;
+import org.deidentifier.arx.criteria.EntropyLDiversity;
+import org.deidentifier.arx.criteria.RecursiveCLDiversity;
+import org.deidentifier.arx.metric.Metric;
 
 /**
  * This class represents an example for person data anonymized with L-Diversity.
@@ -35,16 +40,16 @@ public class ExamplePersonLDiversity extends ExamplePersonKAnonymity {
 			Data data = csvInit26Attributes();
 			System.out.println("------After data PREPARATION: " + LocalDateTime.now());
 			
-			setInsensitiveAttr(data);
-			createHierarchy(data, FIRST_NAME);
-			createHierarchy(data, OFFICIAL_NAME);
-			createHierarchy(data, ORIGINAL_NAME);
-			createHierarchy(data, ORGANISATION_NAME);
-			createHierarchy(data, DEPARTMENT);
+			data = setInsensitiveAttr(data);
+			data = setQuasiIdentifierNames(data);
 			createDateAnonymizationSyntactic(data, DATE_OF_BIRTH);
 			
-			setKAnonymity();
-			runAnonymization(data);
+	        data.getDefinition().setAttributeType(PHONE_NUMBER, AttributeType.SENSITIVE_ATTRIBUTE);
+	        setKAnonymity();
+	        config.addPrivacyModel(new RecursiveCLDiversity(PHONE_NUMBER, 3.0d, 2));
+//	        config.setSuppressionLimit(0d);
+			
+	        runAnonymization(data);
 		} catch (Exception e) {
 			System.out.println(e);
 		}
