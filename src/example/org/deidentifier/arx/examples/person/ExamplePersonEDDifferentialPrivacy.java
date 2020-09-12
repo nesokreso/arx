@@ -39,7 +39,7 @@ public class ExamplePersonEDDifferentialPrivacy extends ExamplePerson {
 	public static void main(String[] args) {
 		try {
 			// Create data object
-			Data data = csvInit26Attributes();
+			Data data = csvInit26AttrLarge();
 			System.out.println("------After data PREPARATION: " + LocalDateTime.now());
 
 			data = setInsensitiveAttr(data);

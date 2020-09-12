@@ -152,12 +152,27 @@ public class ExamplePerson extends Example {
 		return data;
 	}
 
-	protected static Data csvInit26Attributes() throws IOException {
+	protected static Data csvInit26AttrLarge() throws IOException {
 		DataSource source;
-		// Small data input
-//		source = DataSource.createCSVSource(CSV_SMALL, StandardCharsets.UTF_8, ';', true);
-		// Large data input
 		source = DataSource.createCSVSource(CSV_LARGE, StandardCharsets.UTF_8, ';', true);
+		addColumns(source);
+		Data data = Data.create(source);
+		printInput(data);
+		System.out.println("------After data PREPARATION: " + LocalDateTime.now());
+		return data;
+	}
+	
+	protected static Data csvInit26AttrSmall() throws IOException {
+		DataSource source;
+		source = DataSource.createCSVSource(CSV_SMALL, StandardCharsets.UTF_8, ';', true);
+		addColumns(source);
+		Data data = Data.create(source);
+		printInput(data);
+		System.out.println("------After data PREPARATION: " + LocalDateTime.now());
+		return data;
+	}
+	
+	private static DataSource addColumns(DataSource source) {
 		source.addColumn(ID, DataType.INTEGER);
 		source.addColumn(ORGANISATION_NAME, DataType.STRING);
 		source.addColumn(ORGANISATION_ADDITIONAL_NAME, DataType.STRING);
@@ -184,10 +199,7 @@ public class ExamplePerson extends Example {
 		source.addColumn(CURRENT_TOWN, DataType.STRING);
 		source.addColumn(CURRENT_ZIP_CODE, DataType.INTEGER);
 		source.addColumn(MANDATOR, DataType.STRING);
-		Data data = Data.create(source);
-		printInput(data);
-		System.out.println("------After data PREPARATION: " + LocalDateTime.now());
-		return data;
+		return source;
 	}
 
 	/**

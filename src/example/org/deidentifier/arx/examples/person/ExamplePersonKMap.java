@@ -21,6 +21,7 @@ import org.deidentifier.arx.ARXConfiguration;
 import org.deidentifier.arx.ARXPopulationModel;
 import org.deidentifier.arx.Data;
 import org.deidentifier.arx.ARXPopulationModel.Region;
+import org.deidentifier.arx.Data.DefaultData;
 import org.deidentifier.arx.criteria.KMap;
 
 /**
@@ -34,9 +35,7 @@ public class ExamplePersonKMap extends ExamplePerson {
 	 */
 	public static void main(String[] args) {
 		try {
-			// Create data object
-			Data data = csvInit26Attributes();
-
+			Data data = csvInit26AttrLarge();
 			data = setInsensitiveAttr(data);
 			data = setQuasiIdentifierNames(data);
 			

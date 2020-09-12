@@ -32,8 +32,7 @@ public class ExamplePersonLDiversity extends ExamplePersonKAnonymity {
 	 */
 	public static void main(String[] args) {
 		try {
-			// Data input can be initialized by DB or by CSV depending on the function in ExamplePerson
-			Data data = csvInit26Attributes();
+			Data data = csvInit26AttrLarge();
 			
 			data = setInsensitiveAttr(data);
 			data = setQuasiIdentifierNames(data);

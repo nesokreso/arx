@@ -18,51 +18,45 @@
 package org.deidentifier.arx.examples.person;
 
 import org.deidentifier.arx.ARXConfiguration;
+import org.deidentifier.arx.AttributeType;
 import org.deidentifier.arx.Data;
-import org.deidentifier.arx.DataType;
-import org.deidentifier.arx.aggregates.HierarchyBuilderRedactionBased;
-import org.deidentifier.arx.aggregates.HierarchyBuilderRedactionBased.Order;
+import org.deidentifier.arx.DataSubset;
+import org.deidentifier.arx.criteria.DPresence;
 import org.deidentifier.arx.criteria.KAnonymity;
 import org.deidentifier.arx.metric.Metric;
 
 /**
- * This class represents an example for person data anonymized with K-Anonymity.
+ * This class represents an example for person data anonymized with L-Diversity.
  *
  * @author Nenad Jevdjenic
  */
-public class ExamplePersonKAnonymity extends ExamplePerson {
+public class ExamplePersDPresence extends ExamplePersonKAnonymity {
 	/**
 	 * Entry point.
 	 */
 	public static void main(String[] args) {
 		try {
 			Data data = csvInit26AttrLarge();
-
+			
 			data = setInsensitiveAttr(data);
 			data = setQuasiIdentifierNames(data);
-
-	        HierarchyBuilderRedactionBased<?> builder = HierarchyBuilderRedactionBased.create(Order.RIGHT_TO_LEFT,
-					Order.RIGHT_TO_LEFT, ' ', generateRandomInt());
-			data.getDefinition().setAttributeType(CURRENT_ZIP_CODE, builder);
-			data.getDefinition().setDataType(CURRENT_ZIP_CODE, DataType.INTEGER);
-			
 			createDateAnonymizationSyntactic(data, DATE_OF_BIRTH);
-			createDateAnonymizationSyntactic(data, DATE_OF_DEATH);
-			createDateAnonymizationSyntactic(data, LAST_MEDICAL_CHECKUP);
-			createDateAnonymizationSyntactic(data, NEXT_MEDICAL_CHECKUP);
-
-			setKAnonymity();
-			runAnonymization(data);
+			
+			Data subsetData = csvInit26AttrSmall();
+			// Define research subset
+			subsetData = setInsensitiveAttr(subsetData);
+			subsetData = setQuasiIdentifierNames(subsetData);
+			createDateAnonymizationSyntactic(subsetData, DATE_OF_BIRTH);
+			
+			DataSubset subset = DataSubset.create(data, subsetData);
+	        
+	        data.getDefinition().setAttributeType(PHONE_NUMBER, AttributeType.SENSITIVE_ATTRIBUTE);
+	        config = ARXConfiguration.create(1d, Metric.createEntropyMetric());
+	        config.addPrivacyModel(new KAnonymity(2));
+	        config.addPrivacyModel(new DPresence(1d / 2d, 2d / 3d, subset));
+	        runAnonymization(data);
 		} catch (Exception e) {
 			System.out.println(e);
 		}
-	}
-	
-	protected static ARXConfiguration setKAnonymity() {
-		config = ARXConfiguration.create();
-		config.addPrivacyModel(new KAnonymity(2));
-		config.setSuppressionLimit(1d);
-		config.setQualityModel(Metric.createEntropyMetric());
-		return config;
 	}
 }

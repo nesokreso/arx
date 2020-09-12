@@ -32,8 +32,7 @@ public class ExamplePersonRiskBasedAnonymization extends ExamplePerson {
 	 */
 	public static void main(String[] args) {
 		try {
-			// Create data object
-			Data data = csvInit26Attributes();
+			Data data = csvInit26AttrLarge();
 
 			data = setInsensitiveAttr(data);
 			data = setQuasiIdentifierNames(data);
