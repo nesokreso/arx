@@ -17,16 +17,20 @@
 
 package org.deidentifier.arx.examples.large;
 
+import org.deidentifier.arx.ARXConfiguration;
 import org.deidentifier.arx.AttributeType;
 import org.deidentifier.arx.Data;
-import org.deidentifier.arx.criteria.RecursiveCLDiversity;
+import org.deidentifier.arx.criteria.BasicBLikeness;
+import org.deidentifier.arx.criteria.HierarchicalDistanceTCloseness;
+import org.deidentifier.arx.criteria.KAnonymity;
+import org.deidentifier.arx.metric.Metric;
 
 /**
  * This class represents an example for person data anonymized with L-Diversity.
  *
  * @author Nenad Jevdjenic
  */
-public class ExamplePersonLDiversity extends ExamplePersonKAnonymity {
+public class ExamplePersonBLikeness extends ExamplePersonKAnonymity {
 	/**
 	 * Entry point.
 	 */
@@ -40,8 +44,9 @@ public class ExamplePersonLDiversity extends ExamplePersonKAnonymity {
 			createDateAnonymizationSyntactic(data, DATE_OF_BIRTH);
 			
 	        data.getDefinition().setAttributeType(PHONE_NUMBER, AttributeType.SENSITIVE_ATTRIBUTE);
-	        setKAnonymity();
-	        config.addPrivacyModel(new RecursiveCLDiversity(PHONE_NUMBER, 3.0d, 2));
+	        config = ARXConfiguration.create(1d, Metric.createLossMetric());
+	        config.addPrivacyModel(new KAnonymity(6));
+	        config.addPrivacyModel(new BasicBLikeness(PHONE_NUMBER, 3));
 	        runAnonymization(data);
 		} catch (Exception e) {
 			System.out.println(e);

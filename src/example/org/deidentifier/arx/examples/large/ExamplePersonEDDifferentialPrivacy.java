@@ -42,19 +42,8 @@ public class ExamplePersonEDDifferentialPrivacy extends ExamplePerson {
 			Data data = csvInit26Attributes();
 			System.out.println("------After data PREPARATION: " + LocalDateTime.now());
 
-			data.getDefinition().setAttributeType(ID, AttributeType.INSENSITIVE_ATTRIBUTE);
-			data.getDefinition().setDataType(ID, DataType.INTEGER);
-
-			createHierarchy(data, ORGANISATION_NAME);
-			createHierarchy(data, ORGANISATION_ADDITIONAL_NAME);
-			createHierarchy(data, DEPARTMENT);
-			createHierarchy(data, OFFICIAL_NAME);
-			createHierarchy(data, ORIGINAL_NAME);
-			createHierarchy(data, FIRST_NAME);
-			createHierarchy(data, PLACE_OF_ORIGIN_NAME);
-			createHierarchy(data, SECOND_PLACE_OF_ORIGIN_NAME);
-			createHierarchy(data, PLACE_OF_BIRTH_COUNTRY);
-			createHierarchy(data, SEX);
+			data = setInsensitiveAttr(data);
+			data = setQuasiIdentifierNames(data);
 			
 			data.getDefinition().setResponseVariable(SEX, true);
 			data.getDefinition().setResponseVariable(OFFICIAL_NAME, true);
@@ -62,7 +51,6 @@ public class ExamplePersonEDDifferentialPrivacy extends ExamplePerson {
 
 			setEDDifferentialPrivacy(Metric.createClassificationMetric(), 2d, 1d, 1E-5d, 5);
 			runAnonymization(data);
-			printResults(data);
 		} catch (Exception e) {
 			System.out.println(e);
 		}

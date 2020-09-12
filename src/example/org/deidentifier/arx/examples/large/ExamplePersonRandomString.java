@@ -17,6 +17,11 @@
 
 package org.deidentifier.arx.examples.large;
 
+import java.nio.charset.Charset;
+import java.time.LocalDateTime;
+import java.util.Random;
+
+import org.apache.commons.lang.RandomStringUtils;
 import org.deidentifier.arx.ARXConfiguration;
 import org.deidentifier.arx.ARXPopulationModel;
 import org.deidentifier.arx.Data;
@@ -24,34 +29,30 @@ import org.deidentifier.arx.ARXPopulationModel.Region;
 import org.deidentifier.arx.criteria.KMap;
 
 /**
- * This class represents an example for person data anonymized with K-Map which is based on K-Anonymity.
+ * This class represents an example for person data anonymized with K-Map which
+ * is based on K-Anonymity.
  *
  * @author Nenad Jevdjenic
  */
-public class ExamplePersonKMap extends ExamplePerson {
+public class ExamplePersonRandomString extends ExamplePerson {
 	/**
 	 * Entry point.
 	 */
 	public static void main(String[] args) {
 		try {
-			// Create data object
-			Data data = csvInit26Attributes();
+			Random r = new Random();
+			char c = (char) (r.nextInt(260) + 'a');
+			System.out.println(c);
+			byte[] array = new byte[7]; // length is bounded by 7
+			new Random().nextBytes(array);
+			String generatedString = new String(array, Charset.forName("UTF-8"));
 
-			data = setInsensitiveAttr(data);
-			data = setQuasiIdentifierNames(data);
-			
-			createHierarchy(data, CURRENT_ZIP_CODE);
-			createDateAnonymizationSyntactic(data, DATE_OF_BIRTH);
-			createDateAnonymizationSyntactic(data, DATE_OF_DEATH);
-			createDateAnonymizationSyntactic(data, LAST_MEDICAL_CHECKUP);
-			createDateAnonymizationSyntactic(data, NEXT_MEDICAL_CHECKUP);
-			ARXPopulationModel populationmodel = ARXPopulationModel.create(Region.EUROPE);
-			KMap kMap = new KMap(3, 0.7d, populationmodel);
-			config = ARXConfiguration.create();
-			config.addPrivacyModel(kMap);
-	        config.setSuppressionLimit(1d);
-	        
-			runAnonymization(data);
+			System.out.println(generatedString);
+			int length = 10;
+			boolean useLetters = true;
+			boolean useNumbers = false;
+			String generatedString2 = RandomStringUtils.random(length, useLetters, useNumbers);
+			System.out.println(generatedString2);
 		} catch (Exception e) {
 			System.out.println(e);
 		}

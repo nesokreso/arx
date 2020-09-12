@@ -17,7 +17,6 @@
 
 package org.deidentifier.arx.examples.large;
 
-import java.time.LocalDateTime;
 import org.deidentifier.arx.ARXConfiguration;
 import org.deidentifier.arx.Data;
 import org.deidentifier.arx.criteria.AverageReidentificationRisk;
@@ -34,8 +33,7 @@ public class ExamplePersonRiskBasedAnonymization extends ExamplePerson {
 	public static void main(String[] args) {
 		try {
 			// Create data object
-			Data data = dbInit26Attributes();
-			System.out.println("------After data PREPARATION: " + LocalDateTime.now());
+			Data data = csvInit26Attributes();
 
 			data = setInsensitiveAttr(data);
 			data = setQuasiIdentifierNames(data);

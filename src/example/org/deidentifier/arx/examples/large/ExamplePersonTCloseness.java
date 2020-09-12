@@ -51,10 +51,6 @@ public class ExamplePersonTCloseness extends ExamplePersonKAnonymity {
 			createDateAnonymizationSyntactic(data, DATE_OF_BIRTH);
 			
 	        data.getDefinition().setAttributeType(COUNTRY_OF_ORIGIN, AttributeType.SENSITIVE_ATTRIBUTE);
-//	        setKAnonymity();
-	        //config.addPrivacyModel(new OrderedDistanceTCloseness(COUNTRY_OF_ORIGIN, 0.3751));
-//	        config.setSuppressionLimit(0d);
-	        
 	        DefaultHierarchy countryOfOrigin = Hierarchy.create();
 	        countryOfOrigin.add("GB","JAP","SCR","CH");
 	        countryOfOrigin.add("DE","BLR","POR","SLO");
