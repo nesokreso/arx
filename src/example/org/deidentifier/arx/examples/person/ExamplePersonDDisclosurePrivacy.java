@@ -20,6 +20,7 @@ package org.deidentifier.arx.examples.person;
 import org.deidentifier.arx.ARXConfiguration;
 import org.deidentifier.arx.AttributeType;
 import org.deidentifier.arx.Data;
+import org.deidentifier.arx.DataType;
 import org.deidentifier.arx.criteria.DDisclosurePrivacy;
 import org.deidentifier.arx.criteria.KAnonymity;
 import org.deidentifier.arx.criteria.RecursiveCLDiversity;
@@ -39,14 +40,14 @@ public class ExamplePersonDDisclosurePrivacy extends ExamplePerson {
 			Data data = csvInit26AttrLarge();
 			
 			data = setInsensitiveAttr(data);
-			data = setQuasiIdentifierNames(data);
-			createDateAnonymizationSyntactic(data, DATE_OF_BIRTH);
+			data = setQuasiIdentifiersString(data);
+			setMicroAggregation(data, DATE_OF_BIRTH, DataType.DATE);
 			
 	        data.getDefinition().setAttributeType(PHONE_NUMBER, AttributeType.SENSITIVE_ATTRIBUTE);
 	        config = ARXConfiguration.create();
-//			config.addPrivacyModel(new KAnonymity(2));
-//			config.setSuppressionLimit(1d);
-//			config.setQualityModel(Metric.createEntropyMetric());
+			config.addPrivacyModel(new KAnonymity(2));
+			config.setSuppressionLimit(1);
+			config.setQualityModel(Metric.createEntropyMetric());
 	        config.addPrivacyModel(new DDisclosurePrivacy(PHONE_NUMBER, 3d));
 	        runAnonymization(data);
 		} catch (Exception e) {

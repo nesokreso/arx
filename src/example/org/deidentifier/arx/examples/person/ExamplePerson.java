@@ -91,8 +91,8 @@ public class ExamplePerson extends Example {
 	protected static final String CSV_SMALL = "data/20_persons.csv";
 	protected static final String CSV_LARGE = "data/146k_persons.csv";
 	/** DB connection settings */
-	protected static final String ROWNUM = "100";
-	protected static final String TABLE = "person_arx";
+	protected static final String ROWNUM = "100000";
+	protected static final String TABLE = "PERSON_ARX";
 	protected static final String dbUrl = "jdbc:oracle:thin:@172.18.60.83:1521/IVZPDB";
 	protected static final String dbUser = "ARX";
 	protected static final String dbPw = "ARX";
@@ -117,7 +117,7 @@ public class ExamplePerson extends Example {
 			System.out.println("------After select EXECUTION: " + LocalDateTime.now());
 			while (rs.next()) {
 				data.add(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5),
-						rs.getString(6), rs.getString(7), formatIvzDate(rs.getDate(8)));
+						rs.getString(6), rs.getString(7), formatInputDate(rs.getDate(8)));
 			}
 			System.out.println("------After data PREPARATION: " + LocalDateTime.now());
 			printInput(data);
@@ -152,10 +152,10 @@ public class ExamplePerson extends Example {
 			System.out.println("------After select EXECUTION: " + LocalDateTime.now());
 			while (rs.next()) {
 				data.add(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5),
-						rs.getString(6), rs.getString(7), formatIvzDate(rs.getDate(8)), rs.getString(9),
+						rs.getString(6), rs.getString(7), formatInputDate(rs.getDate(8)), rs.getString(9),
 						rs.getString(10), rs.getString(11), rs.getString(12), rs.getString(13), rs.getString(14),
-						rs.getString(15), formatIvzDate(rs.getDate(16)), rs.getString(17),
-						formatIvzDate(rs.getDate(18)), formatIvzDate(rs.getDate(19)), rs.getString(20),
+						rs.getString(15), formatInputDate(rs.getDate(16)), rs.getString(17),
+						formatInputDate(rs.getDate(18)), formatInputDate(rs.getDate(19)), rs.getString(20),
 						rs.getString(21), rs.getString(22), rs.getString(23), rs.getString(24), rs.getString(25),
 						rs.getString(26));
 			}
@@ -223,8 +223,8 @@ public class ExamplePerson extends Example {
 		source.addColumn(REMARK, DataType.STRING);
 		source.addColumn(LAST_MEDICAL_CHECKUP, DataType.DATE, true);
 		source.addColumn(NEXT_MEDICAL_CHECKUP, DataType.DATE, true);
-		source.addColumn(PHONE_NUMBER, DataType.STRING);
-		source.addColumn(CELL_NUMBER, DataType.STRING);
+		source.addColumn(PHONE_NUMBER, DataType.INTEGER, true);;
+		source.addColumn(CELL_NUMBER, DataType.INTEGER, true);
 		source.addColumn(EMAIL, DataType.STRING);
 		source.addColumn(GUARDIANSHIP, DataType.STRING);
 		source.addColumn(CURRENT_TOWN, DataType.STRING);
@@ -247,15 +247,11 @@ public class ExamplePerson extends Example {
 		printResults(data);
 	}
 
-	protected static HierarchyBuilderRedactionBased<?> createHierarchy(Data data, String attribute,
-			DataType<?> dataType) {
-		HierarchyBuilderRedactionBased<?> builder = HierarchyBuilderRedactionBased.create(Order.RIGHT_TO_LEFT,
-				Order.RIGHT_TO_LEFT, ' ', generateRandomString());
-		data.getDefinition().setAttributeType(attribute, builder);
-		data.getDefinition().setDataType(attribute, dataType);
-		return builder;
-	}
-
+	/**
+	 * Set insensitive attributes 
+	 * @param data
+	 * @return prepared data
+	 */
 	protected static Data setInsensitiveAttr(Data data) {
 		data.getDefinition().setAttributeType(ID, AttributeType.INSENSITIVE_ATTRIBUTE);
 		data.getDefinition().setDataType(ID, DataType.INTEGER);
@@ -264,34 +260,96 @@ public class ExamplePerson extends Example {
 		return data;
 	}
 
-	protected static Data setQuasiIdentifierNames(Data data) {
+	/**
+	 * Set quasi identifiers for attributes of type STRING
+	 * @param data
+	 * @return prepared data
+	 */
+	protected static Data setQuasiIdentifiersString(Data data) {
 		createHierarchy(data, ORGANISATION_NAME, DataType.STRING);
 		createHierarchy(data, ORGANISATION_ADDITIONAL_NAME, DataType.STRING);
 		createHierarchy(data, DEPARTMENT, DataType.STRING);
 		createHierarchy(data, OFFICIAL_NAME, DataType.STRING);
 		createHierarchy(data, ORIGINAL_NAME, DataType.STRING);
 		createHierarchy(data, FIRST_NAME, DataType.STRING);
+		createHierarchy(data, PLACE_OF_ORIGIN_NAME, DataType.STRING);
+		createHierarchy(data, SECOND_PLACE_OF_ORIGIN_NAME, DataType.STRING);
+		createHierarchy(data, PLACE_OF_BIRTH_COUNTRY, DataType.STRING);
+		createHierarchy(data, SEX, DataType.STRING);
+		createHierarchy(data, REMARK, DataType.STRING);
+		createHierarchy(data, EMAIL, DataType.STRING);
+		createHierarchy(data, CURRENT_TOWN, DataType.STRING);
 		return data;
 	}
-
-	protected static Data setQuasiIdentifierDates(Data data) {
-		createDateAnonymizationSyntactic(data, DATE_OF_BIRTH);
-		createDateAnonymizationSyntactic(data, DATE_OF_DEATH);
-		createDateAnonymizationSyntactic(data, LAST_MEDICAL_CHECKUP);
-		createDateAnonymizationSyntactic(data, NEXT_MEDICAL_CHECKUP);
+	
+	/**
+	 * Set quasi identifiers for attributes of type DATE
+	 * @param data
+	 * @return prepared data
+	 */
+	protected static Data setQuasiIdentifiersDate(Data data) {
+		setMicroAggregation(data, DATE_OF_BIRTH, DataType.DATE);
+		setMicroAggregation(data, DATE_OF_DEATH, DataType.DATE);
+		setMicroAggregation(data, LAST_MEDICAL_CHECKUP, DataType.DATE);
+		setMicroAggregation(data, NEXT_MEDICAL_CHECKUP, DataType.DATE);
 		return data;
 	}
-
-	protected static void createDateAnonymizationSyntactic(Data data, String attribute) {
-		createDateAnonymization(data, attribute);
+	
+	/**
+	 * Set quasi identifiers for attributes of type INTEGER
+	 * @param data
+	 * @return prepared data
+	 */
+	protected static Data setQuasiIdentifiersInteger(Data data) {
+		data.getDefinition().setAttributeType(CELL_NUMBER, AttributeType.QUASI_IDENTIFYING_ATTRIBUTE);
+		setMicroAggregation(data, CELL_NUMBER, DataType.INTEGER);
+		data.getDefinition().setAttributeType(PHONE_NUMBER, AttributeType.QUASI_IDENTIFYING_ATTRIBUTE);
+		setMicroAggregation(data, PHONE_NUMBER, DataType.INTEGER);
+		data.getDefinition().setAttributeType(CURRENT_ZIP_CODE, AttributeType.QUASI_IDENTIFYING_ATTRIBUTE);
+		setMicroAggregation(data, CURRENT_ZIP_CODE, DataType.INTEGER);
+		return data;
+	}
+	
+	/**
+	 * @param data
+	 * @param attribute
+	 * @param dataType
+	 * @return Hierarchy for attribute transformation
+	 */
+	protected static HierarchyBuilderRedactionBased<?> createHierarchy(Data data, String attribute,
+			DataType<?> dataType) {
+		HierarchyBuilderRedactionBased<?> builder = HierarchyBuilderRedactionBased.create(Order.RIGHT_TO_LEFT,
+				Order.RIGHT_TO_LEFT, ' ', generateRandomString());
+		data.getDefinition().setAttributeType(attribute, builder);
+		data.getDefinition().setDataType(attribute, dataType);
+		return builder;
+	}
+	
+	/**
+	 * Sets micro aggregation
+	 * @param data
+	 * @param attribute
+	 * @param dataType
+	 */
+	protected static void setMicroAggregation(Data data, String attribute, DataType<?> dataType) {
+		setQuasiIdentifier(data, attribute, dataType);
 		data.getDefinition().setAttributeType(attribute, MicroAggregationFunction.createArithmeticMean());
 	}
 
-	protected static void createDateAnonymization(Data data, String attribute) {
+	/**
+	 * Sets quasi identifier
+	 * @param data
+	 * @param attribute
+	 * @param dataType
+	 */
+	protected static void setQuasiIdentifier(Data data, String attribute, DataType<?> dataType) {
 		data.getDefinition().setAttributeType(attribute, AttributeType.QUASI_IDENTIFYING_ATTRIBUTE);
-		data.getDefinition().setDataType(attribute, DataType.DATE);
+		data.getDefinition().setDataType(attribute, dataType);
 	}
 
+	/**
+	 * @param data
+	 */
 	protected static void createHierarchySex(Data data) {
 		DefaultHierarchy sex = Hierarchy.create();
 		sex.add("MALE", "FEMALE");
@@ -304,6 +362,10 @@ public class ExamplePerson extends Example {
 		data.getDefinition().setHierarchy(SEX, sex);
 	}
 
+	/**
+	 * @param data
+	 * @param attribute
+	 */
 	protected static void createHierarchyLanguage(Data data, String attribute) {
 		DefaultHierarchy lang = Hierarchy.create();
 		for (String l : Locale.getISOLanguages()) {
@@ -343,6 +405,11 @@ public class ExamplePerson extends Example {
 		data.getDefinition().setHierarchy(attribute, lang);
 	}
 
+	/**
+	 * @param data
+	 * @param attribute
+	 * @return hierarchy for countries
+	 */
 	protected static DefaultHierarchy createHierarchyCountry(Data data, String attribute) {
 		DefaultHierarchy country = Hierarchy.create();
 		for (String c : Locale.getISOCountries()) {
@@ -415,19 +482,33 @@ public class ExamplePerson extends Example {
 		}
 	}
 
-	protected static char generateRandomString() {
+	/**
+	 * Generates a random string for transformation
+	 * @return random char a-z
+	 */
+	private static char generateRandomString() {
 		Random r = new Random();
 		char c = (char) (r.nextInt(26) + 'a');
 		return c;
 	}
 
-	protected static char generateRandomInt() {
+	/**
+	 * Generates a random integer for transformation
+	 * @return random char 1-9
+	 */
+	@SuppressWarnings("unused")
+	private static char generateRandomInt() {
 		String r = RandomStringUtils.randomNumeric(10);
 		char c = r.charAt(0);
 		return c;
 	}
 
-	protected static String formatIvzDate(Date date) {
+	/**
+	 * Format input date to ARX format
+	 * @param date
+	 * @return
+	 */
+	private static String formatInputDate(Date date) {
 		if (date == null) {
 			return "null";
 		} else {

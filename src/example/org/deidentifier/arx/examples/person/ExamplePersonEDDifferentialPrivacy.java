@@ -36,7 +36,7 @@ public class ExamplePersonEDDifferentialPrivacy extends ExamplePerson {
 		try {
 			Data data = csvInit26AttrLarge();
 			data = setInsensitiveAttr(data);
-			data = setQuasiIdentifierNames(data);
+			data = setQuasiIdentifiersString(data);
 			
 			data.getDefinition().setResponseVariable(SEX, true);
 			data.getDefinition().setResponseVariable(OFFICIAL_NAME, true);

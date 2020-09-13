@@ -20,6 +20,7 @@ package org.deidentifier.arx.examples.person;
 import org.deidentifier.arx.ARXConfiguration;
 import org.deidentifier.arx.AttributeType;
 import org.deidentifier.arx.Data;
+import org.deidentifier.arx.DataType;
 import org.deidentifier.arx.criteria.KAnonymity;
 import org.deidentifier.arx.criteria.RecursiveCLDiversity;
 import org.deidentifier.arx.metric.Metric;
@@ -29,7 +30,7 @@ import org.deidentifier.arx.metric.Metric;
  * 
  * @author Nenad Jevdjenic
  */
-public class ExamplePersonLDiversity extends ExamplePersonKAnonymity {
+public class ExamplePersonLDiversity extends ExamplePerson {
 	/**
 	 * Entry point.
 	 */
@@ -38,8 +39,8 @@ public class ExamplePersonLDiversity extends ExamplePersonKAnonymity {
 			Data data = csvInit26AttrLarge();
 			
 			data = setInsensitiveAttr(data);
-			data = setQuasiIdentifierNames(data);
-			createDateAnonymizationSyntactic(data, DATE_OF_BIRTH);
+			data = setQuasiIdentifiersString(data);
+			setMicroAggregation(data, DATE_OF_BIRTH, DataType.DATE);
 			
 	        data.getDefinition().setAttributeType(PHONE_NUMBER, AttributeType.SENSITIVE_ATTRIBUTE);
 	        config = ARXConfiguration.create();

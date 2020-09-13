@@ -36,16 +36,14 @@ public class ExamplePersonPopulationUniqueness extends ExamplePerson {
 		try {
 			Data data = csvInit26AttrLarge();
 			data = setInsensitiveAttr(data);
-			data = setQuasiIdentifierNames(data);
-			createDateAnonymizationSyntactic(data, DATE_OF_BIRTH);
-			createDateAnonymizationSyntactic(data, DATE_OF_DEATH);
-			createDateAnonymizationSyntactic(data, LAST_MEDICAL_CHECKUP);
-			createDateAnonymizationSyntactic(data, NEXT_MEDICAL_CHECKUP);
+			data = setQuasiIdentifiersString(data);
+//			data = setQuasiIdentifiersDate(data);
+			data = setQuasiIdentifiersInteger(data);
 
 			ARXPopulationModel europeanPopulationmodel = ARXPopulationModel.create(Region.EUROPE);
 			config = ARXConfiguration.create();
 			config.setSuppressionLimit(1d);
-			config.addPrivacyModel(new PopulationUniqueness(0.9, europeanPopulationmodel));
+			config.addPrivacyModel(new PopulationUniqueness(0.98, europeanPopulationmodel));
 			runAnonymization(data);
 		} catch (Exception e) {
 			System.out.println(e);

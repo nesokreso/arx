@@ -38,7 +38,7 @@ public class ExamplePersonTCloseness extends ExamplePerson {
 		try {
 			Data data = csvInit26AttrLarge();
 			data = setInsensitiveAttr(data);
-			data = setQuasiIdentifierNames(data);
+			data = setQuasiIdentifiersString(data);
 	        DefaultHierarchy countryHierarchy = createHierarchyCountry(data, COUNTRY_OF_ORIGIN);
 	        DefaultHierarchy nationHierarchy = createHierarchyCountry(data, NATIONALITY);
 	        data.getDefinition().setAttributeType(COUNTRY_OF_ORIGIN, AttributeType.SENSITIVE_ATTRIBUTE);

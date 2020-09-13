@@ -29,7 +29,7 @@ import org.deidentifier.arx.metric.Metric;
  *
  * @author Nenad Jevdjenic
  */
-public class ExamplePersonBLikeness extends ExamplePersonKAnonymity {
+public class ExamplePersonBLikeness extends ExamplePerson {
 	/**
 	 * Entry point.
 	 */
@@ -37,8 +37,8 @@ public class ExamplePersonBLikeness extends ExamplePersonKAnonymity {
 		try {
 			Data data = csvInit26AttrLarge();
 			data = setInsensitiveAttr(data);
-			data = setQuasiIdentifierNames(data);
-			data = setQuasiIdentifierDates(data);
+			data = setQuasiIdentifiersString(data);
+			data = setQuasiIdentifiersDate(data);
 			
 	        config = ARXConfiguration.create(1d, Metric.createLossMetric());
 	        config.addPrivacyModel(new KAnonymity(2));

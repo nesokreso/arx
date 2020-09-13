@@ -36,11 +36,8 @@ public class ExamplePersonKMap extends ExamplePerson {
 		try {
 			Data data = csvInit26AttrLarge();
 			data = setInsensitiveAttr(data);
-			data = setQuasiIdentifierNames(data);
-			createDateAnonymizationSyntactic(data, DATE_OF_BIRTH);
-			createDateAnonymizationSyntactic(data, DATE_OF_DEATH);
-			createDateAnonymizationSyntactic(data, LAST_MEDICAL_CHECKUP);
-			createDateAnonymizationSyntactic(data, NEXT_MEDICAL_CHECKUP);
+			data = setQuasiIdentifiersString(data);
+			data = setQuasiIdentifiersDate(data);
 			
 			ARXPopulationModel europeanPopulationModel = ARXPopulationModel.create(Region.EUROPE);
 			KMap kMap = new KMap(3, 0.7d, europeanPopulationModel);
