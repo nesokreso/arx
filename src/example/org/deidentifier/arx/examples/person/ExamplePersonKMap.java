@@ -21,7 +21,6 @@ import org.deidentifier.arx.ARXConfiguration;
 import org.deidentifier.arx.ARXPopulationModel;
 import org.deidentifier.arx.Data;
 import org.deidentifier.arx.ARXPopulationModel.Region;
-import org.deidentifier.arx.Data.DefaultData;
 import org.deidentifier.arx.criteria.KMap;
 
 /**
