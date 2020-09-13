@@ -44,8 +44,8 @@ public class ExamplePersonKMap extends ExamplePerson {
 			createDateAnonymizationSyntactic(data, DATE_OF_DEATH);
 			createDateAnonymizationSyntactic(data, LAST_MEDICAL_CHECKUP);
 			createDateAnonymizationSyntactic(data, NEXT_MEDICAL_CHECKUP);
-			ARXPopulationModel populationmodel = ARXPopulationModel.create(Region.EUROPE);
-			KMap kMap = new KMap(3, 0.7d, populationmodel);
+			ARXPopulationModel europeanPopulationModel = ARXPopulationModel.create(Region.EUROPE);
+			KMap kMap = new KMap(3, 0.7d, europeanPopulationModel);
 			config = ARXConfiguration.create();
 			config.addPrivacyModel(kMap);
 	        config.setSuppressionLimit(1d);
