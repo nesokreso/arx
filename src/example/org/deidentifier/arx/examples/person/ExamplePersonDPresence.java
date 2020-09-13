@@ -29,7 +29,7 @@ import org.deidentifier.arx.metric.Metric;
  *
  * @author Nenad Jevdjenic
  */
-public class ExamplePersDPresence extends ExamplePerson {
+public class ExamplePersonDPresence extends ExamplePerson {
 	/**
 	 * Entry point.
 	 */
