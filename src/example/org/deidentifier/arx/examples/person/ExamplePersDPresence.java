@@ -36,21 +36,15 @@ public class ExamplePersDPresence extends ExamplePerson {
 	public static void main(String[] args) {
 		try {
 			Data data = csvInit26AttrLarge();
-			
 			data = setInsensitiveAttr(data);
 			data = setQuasiIdentifierNames(data);
-			createDateAnonymizationSyntactic(data, DATE_OF_BIRTH);
-			
+
+			// Load csv subset with 20 values which are included in the large csv	
 			Data subsetData = csvInit26AttrSmall();
-			// Define research subset
-			subsetData = setInsensitiveAttr(subsetData);
-			subsetData = setQuasiIdentifierNames(subsetData);
-			createDateAnonymizationSyntactic(subsetData, DATE_OF_BIRTH);
 			DataSubset subset = DataSubset.create(data, subsetData);
 	        
-	        config = ARXConfiguration.create(1d, Metric.createEntropyMetric());
-	        config.addPrivacyModel(new KAnonymity(2));
-	        config.addPrivacyModel(new DPresence(1d / 2d, 2d / 3d, subset));
+	        config = ARXConfiguration.create(1d, Metric.createAmbiguityMetric());
+	        config.addPrivacyModel(new DPresence(1d, 10d, subset));
 	        runAnonymization(data);
 		} catch (Exception e) {
 			System.out.println(e);

@@ -88,7 +88,7 @@ public class ExamplePerson extends Example {
 	protected static ARXResult result;
 	protected static final SimpleDateFormat arxFormat = new SimpleDateFormat("dd.MM.yyyy");
 	/** CSV Input files */
-	protected static final String CSV_SMALL = "data/21_persons.csv";
+	protected static final String CSV_SMALL = "data/20_persons.csv";
 	protected static final String CSV_LARGE = "data/146k_persons.csv";
 	/** DB connection settings */
 	protected static final String ROWNUM = "100";
