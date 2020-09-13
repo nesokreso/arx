@@ -18,33 +18,36 @@
 package org.deidentifier.arx.examples.person;
 
 import org.deidentifier.arx.ARXConfiguration;
+import org.deidentifier.arx.AttributeType;
 import org.deidentifier.arx.Data;
-import org.deidentifier.arx.DataSubset;
-import org.deidentifier.arx.DataType;
-import org.deidentifier.arx.criteria.DPresence;
+import org.deidentifier.arx.criteria.DDisclosurePrivacy;
+import org.deidentifier.arx.criteria.KAnonymity;
+import org.deidentifier.arx.criteria.RecursiveCLDiversity;
+import org.deidentifier.arx.metric.Metric;
 
 /**
- * This class represents an example for person data anonymized with the δ-Presence privacy model.
+ * This class represents an example for person data anonymized with the δ-Disclosure Privacy privacy model.
  * 
  * @author Nenad Jevdjenic
  */
-public class ExamplePersonDPresence extends ExamplePerson {
+public class ExamplePersonDDisclosurePrivacy extends ExamplePerson {
 	/**
 	 * Entry point.
 	 */
 	public static void main(String[] args) {
 		try {
 			Data data = csvInit26AttrLarge();
+			
 			data = setInsensitiveAttr(data);
-			createHierarchy(data, OFFICIAL_NAME, DataType.STRING);
-
-			// Load csv subset with 20 values which are included in the large csv	
-			Data subsetData = csvInit26AttrSmall();
-			DataSubset subset = DataSubset.create(data, subsetData);
-	        
+			data = setQuasiIdentifierNames(data);
+			createDateAnonymizationSyntactic(data, DATE_OF_BIRTH);
+			
+	        data.getDefinition().setAttributeType(PHONE_NUMBER, AttributeType.SENSITIVE_ATTRIBUTE);
 	        config = ARXConfiguration.create();
-	        config.setSuppressionLimit(1d);
-	        config.addPrivacyModel(new DPresence(0d, 3d, subset));
+//			config.addPrivacyModel(new KAnonymity(2));
+//			config.setSuppressionLimit(1d);
+//			config.setQualityModel(Metric.createEntropyMetric());
+	        config.addPrivacyModel(new DDisclosurePrivacy(PHONE_NUMBER, 3d));
 	        runAnonymization(data);
 		} catch (Exception e) {
 			System.out.println(e);

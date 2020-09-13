@@ -17,51 +17,39 @@
 
 package org.deidentifier.arx.examples.person;
 
-import java.time.LocalDateTime;
-
 import org.deidentifier.arx.ARXConfiguration;
 import org.deidentifier.arx.AttributeType;
 import org.deidentifier.arx.Data;
-import org.deidentifier.arx.AttributeType.Hierarchy;
 import org.deidentifier.arx.AttributeType.Hierarchy.DefaultHierarchy;
 import org.deidentifier.arx.criteria.HierarchicalDistanceTCloseness;
 import org.deidentifier.arx.criteria.KAnonymity;
 import org.deidentifier.arx.metric.Metric;
 
 /**
- * This class represents an example for person data anonymized with T-Closeness.
- *
+ * This class represents an example for person data anonymized with the T-Closeness privacy model.
+ * 
  * @author Nenad Jevdjenic
  */
-public class ExamplePersonTCloseness extends ExamplePersonKAnonymity {
+public class ExamplePersonTCloseness extends ExamplePerson {
 	/**
 	 * Entry point.
 	 */
 	public static void main(String[] args) {
 		try {
 			Data data = csvInit26AttrLarge();
-			System.out.println("------After data PREPARATION: " + LocalDateTime.now());
-			
 			data = setInsensitiveAttr(data);
 			data = setQuasiIdentifierNames(data);
-			createDateAnonymizationSyntactic(data, DATE_OF_BIRTH);
-			
+	        DefaultHierarchy countryHierarchy = createHierarchyCountry(data, COUNTRY_OF_ORIGIN);
+	        DefaultHierarchy nationHierarchy = createHierarchyCountry(data, NATIONALITY);
 	        data.getDefinition().setAttributeType(COUNTRY_OF_ORIGIN, AttributeType.SENSITIVE_ATTRIBUTE);
-	        DefaultHierarchy countryOfOrigin = Hierarchy.create();
-	        countryOfOrigin.add("GB","JAP","SCR","CH");
-	        countryOfOrigin.add("DE","BLR","POR","SLO");
-	        countryOfOrigin.add("GB","JAP","SCR","CRO");
-	        countryOfOrigin.add("ITA","FR","POR","SRB");
-	        countryOfOrigin.add("CH","SPA","USA","FR");
-	        countryOfOrigin.add("SPA","SPA","POR","USA");
-	        countryOfOrigin.add("USA","CAN","MEX","CUB");
-	        countryOfOrigin.add("","CAN","MEX","CUB");
-	        config = ARXConfiguration.create();
-	        config.addPrivacyModel(new KAnonymity(3));
-	        config.addPrivacyModel(new HierarchicalDistanceTCloseness(COUNTRY_OF_ORIGIN, 0.6d, countryOfOrigin));
-	        config.setSuppressionLimit(0d);
-	        config.setQualityModel(Metric.createEntropyMetric());
+			data.getDefinition().setAttributeType(NATIONALITY, AttributeType.SENSITIVE_ATTRIBUTE);
 	        
+			config = ARXConfiguration.create();
+			config.addPrivacyModel(new KAnonymity(2));
+			config.setSuppressionLimit(1d);
+			config.setQualityModel(Metric.createEntropyMetric());
+	        config.addPrivacyModel(new HierarchicalDistanceTCloseness(COUNTRY_OF_ORIGIN, 0.6d, countryHierarchy));
+	        config.addPrivacyModel(new HierarchicalDistanceTCloseness(NATIONALITY, 0.6d, nationHierarchy));
 	        runAnonymization(data);
 		} catch (Exception e) {
 			System.out.println(e);

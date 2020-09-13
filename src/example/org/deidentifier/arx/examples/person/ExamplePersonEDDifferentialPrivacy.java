@@ -17,19 +17,15 @@
 
 package org.deidentifier.arx.examples.person;
 
-import java.time.LocalDateTime;
-
 import org.deidentifier.arx.ARXConfiguration;
-import org.deidentifier.arx.AttributeType;
 import org.deidentifier.arx.Data;
-import org.deidentifier.arx.DataType;
 import org.deidentifier.arx.ARXConfiguration.SearchStepSemantics;
 import org.deidentifier.arx.criteria.EDDifferentialPrivacy;
 import org.deidentifier.arx.metric.Metric;
 
 /**
  * This class represents an example for person data anonymized with (ε,δ)-Differential Privacy.
- *
+ * 
  * @author Nenad Jevdjenic
  */
 public class ExamplePersonEDDifferentialPrivacy extends ExamplePerson {
@@ -38,10 +34,7 @@ public class ExamplePersonEDDifferentialPrivacy extends ExamplePerson {
 	 */
 	public static void main(String[] args) {
 		try {
-			// Create data object
 			Data data = csvInit26AttrLarge();
-			System.out.println("------After data PREPARATION: " + LocalDateTime.now());
-
 			data = setInsensitiveAttr(data);
 			data = setQuasiIdentifierNames(data);
 			

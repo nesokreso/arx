@@ -14,5 +14,18 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * K-Anonymity
+ * L-Diversity
+ * T-Closeness
+ * δ-Disclosure Privacy     		X
+ * β-Likeness
+ * K-Map
+ * Risk-Based privacy models
+ * 	Average reidentification risk
+ * 	Sample uniqueness
+ * 	Population uniqueness			
+ * δ-Presence
+ * (ε,δ)-Differential Privacy		
  */
 package org.deidentifier.arx.examples.person;

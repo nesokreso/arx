@@ -29,6 +29,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Random;
 
 import org.apache.commons.lang.RandomStringUtils;
@@ -39,18 +40,17 @@ import org.deidentifier.arx.AttributeType;
 import org.deidentifier.arx.Data.DefaultData;
 import org.deidentifier.arx.DataSource;
 import org.deidentifier.arx.DataType;
+import org.deidentifier.arx.AttributeType.Hierarchy;
 import org.deidentifier.arx.AttributeType.MicroAggregationFunction;
+import org.deidentifier.arx.AttributeType.Hierarchy.DefaultHierarchy;
 import org.deidentifier.arx.Data;
-import org.deidentifier.arx.aggregates.HierarchyBuilderIntervalBased;
 import org.deidentifier.arx.aggregates.HierarchyBuilderRedactionBased;
-import org.deidentifier.arx.aggregates.HierarchyBuilderGroupingBased.Level;
-import org.deidentifier.arx.aggregates.HierarchyBuilderIntervalBased.Interval;
-import org.deidentifier.arx.aggregates.HierarchyBuilderIntervalBased.Range;
 import org.deidentifier.arx.aggregates.HierarchyBuilderRedactionBased.Order;
 import org.deidentifier.arx.examples.Example;
 
 /**
- * This is the base class for many examples based on CSV and DB input data with the various privacy models.
+ * This is the base class for many examples based on CSV and DB input data with
+ * the various privacy models.
  * 
  * @author Nenad Jevdjenic
  */
@@ -98,13 +98,18 @@ public class ExamplePerson extends Example {
 	protected static final String dbPw = "ARX";
 	protected static boolean syntactic;
 
-	protected static Data dbInit8Attributes() throws SQLException {
+	/**
+	 * Initializes data anonymization input with 8 attributes from defined db table.
+	 * 
+	 * @return data anonymization input
+	 * @throws SQLException
+	 */
+	protected static Data dbInit8Attr() {
 		DefaultData data = Data.create();
-		Connection con = DriverManager.getConnection(dbUrl, dbUser, dbPw);
-		try {
+		try (Connection con = DriverManager.getConnection(dbUrl, dbUser, dbPw);
+				Statement stmt = con.createStatement();) {
 			data.add(ID, ORGANISATION_NAME, ORGANISATION_ADDITIONAL_NAME, DEPARTMENT, OFFICIAL_NAME, ORIGINAL_NAME,
 					FIRST_NAME, DATE_OF_BIRTH);
-			Statement stmt = con.createStatement();
 			System.out.println("-----Before select EXECUTION: " + LocalDateTime.now());
 			ResultSet rs = stmt.executeQuery(
 					"SELECT ID, ORGANISATION_NAME, ORGANISATION_ADDITIONAL_NAME, DEPARTMENT, OFFICIAL_NAME, ORIGINAL_NAME, FIRST_NAME, DATE_OF_BIRTH FROM "
@@ -114,73 +119,99 @@ public class ExamplePerson extends Example {
 				data.add(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5),
 						rs.getString(6), rs.getString(7), formatIvzDate(rs.getDate(8)));
 			}
-			con.close();
+			System.out.println("------After data PREPARATION: " + LocalDateTime.now());
+			printInput(data);
+		} catch (SQLException e) {
+			System.err.println(e);
+		}
+		return data;
+	}
+
+	/**
+	 * Initializes data anonymization input with 26 attributes from defined db
+	 * table.
+	 * 
+	 * @return data anonymization input
+	 * @throws SQLException
+	 */
+	protected static Data dbInit26Attr() {
+		DefaultData data = Data.create();
+		try (Connection con = DriverManager.getConnection(dbUrl, dbUser, dbPw);
+				Statement stmt = con.createStatement();) {
+			data.add(ID, ORGANISATION_NAME, ORGANISATION_ADDITIONAL_NAME, DEPARTMENT, OFFICIAL_NAME, ORIGINAL_NAME,
+					FIRST_NAME, DATE_OF_BIRTH, PLACE_OF_ORIGIN_NAME, SECOND_PLACE_OF_ORIGIN_NAME,
+					PLACE_OF_BIRTH_COUNTRY, SEX, LANGUAGE, NATIONALITY, COUNTRY_OF_ORIGIN, DATE_OF_DEATH, REMARK,
+					LAST_MEDICAL_CHECKUP, NEXT_MEDICAL_CHECKUP, PHONE_NUMBER, CELL_NUMBER, EMAIL, GUARDIANSHIP,
+					CURRENT_TOWN, CURRENT_ZIP_CODE, MANDATOR);
+			System.out.println("-----Before select EXECUTION: " + LocalDateTime.now());
+			ResultSet rs = stmt.executeQuery(
+					"SELECT ID, ORGANISATION_NAME, ORGANISATION_ADDITIONAL_NAME, DEPARTMENT, OFFICIAL_NAME, ORIGINAL_NAME, FIRST_NAME, DATE_OF_BIRTH, PLACE_OF_ORIGIN_NAME, "
+							+ "SECOND_PLACE_OF_ORIGIN_NAME, PLACE_OF_BIRTH_COUNTRY, SEX, LANGUAGE, NATIONALITY, COUNTRY_OF_ORIGIN, DATE_OF_DEATH, REMARK, LAST_MEDICAL_CHECKUP, "
+							+ "NEXT_MEDICAL_CHECKUP, PHONE_NUMBER, CELL_NUMBER, EMAIL, GUARDIANSHIP, CURRENT_TOWN, CURRENT_ZIP_CODE, MANDATOR FROM "
+							+ TABLE + " WHERE rownum <= " + ROWNUM);
+			System.out.println("------After select EXECUTION: " + LocalDateTime.now());
+			while (rs.next()) {
+				data.add(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5),
+						rs.getString(6), rs.getString(7), formatIvzDate(rs.getDate(8)), rs.getString(9),
+						rs.getString(10), rs.getString(11), rs.getString(12), rs.getString(13), rs.getString(14),
+						rs.getString(15), formatIvzDate(rs.getDate(16)), rs.getString(17),
+						formatIvzDate(rs.getDate(18)), formatIvzDate(rs.getDate(19)), rs.getString(20),
+						rs.getString(21), rs.getString(22), rs.getString(23), rs.getString(24), rs.getString(25),
+						rs.getString(26));
+			}
+			System.out.println("------After data PREPARATION: " + LocalDateTime.now());
 			printInput(data);
 		} catch (Exception e) {
 			System.out.println(e);
-		} finally {
-			con.close();
-		}
+		} 
 		return data;
 	}
 
-	protected static Data dbInit26Attributes() throws SQLException {
-		Connection con = DriverManager.getConnection(dbUrl, dbUser, dbPw);
-		DefaultData data = Data.create();
-		data.add(ID, ORGANISATION_NAME, ORGANISATION_ADDITIONAL_NAME, DEPARTMENT, OFFICIAL_NAME,
-				ORIGINAL_NAME, FIRST_NAME, DATE_OF_BIRTH, PLACE_OF_ORIGIN_NAME, SECOND_PLACE_OF_ORIGIN_NAME,
-				PLACE_OF_BIRTH_COUNTRY, SEX, LANGUAGE, NATIONALITY, COUNTRY_OF_ORIGIN, DATE_OF_DEATH, REMARK,
-				LAST_MEDICAL_CHECKUP, NEXT_MEDICAL_CHECKUP, PHONE_NUMBER, CELL_NUMBER, EMAIL, GUARDIANSHIP,
-				CURRENT_TOWN, CURRENT_ZIP_CODE, MANDATOR);
-		Statement stmt = con.createStatement();
-		System.out.println("-----Before select EXECUTION: " + LocalDateTime.now());
-		ResultSet rs = stmt.executeQuery(
-				"SELECT ID, ORGANISATION_NAME, ORGANISATION_ADDITIONAL_NAME, DEPARTMENT, OFFICIAL_NAME, ORIGINAL_NAME, FIRST_NAME, DATE_OF_BIRTH, PLACE_OF_ORIGIN_NAME, "
-						+ "SECOND_PLACE_OF_ORIGIN_NAME, PLACE_OF_BIRTH_COUNTRY, SEX, LANGUAGE, NATIONALITY, COUNTRY_OF_ORIGIN, DATE_OF_DEATH, REMARK, LAST_MEDICAL_CHECKUP, "
-						+ "NEXT_MEDICAL_CHECKUP, PHONE_NUMBER, CELL_NUMBER, EMAIL, GUARDIANSHIP, CURRENT_TOWN, CURRENT_ZIP_CODE, MANDATOR FROM "
-						+ TABLE + " WHERE rownum <= " + ROWNUM);
-		System.out.println("------After select EXECUTION: " + LocalDateTime.now());
-		while (rs.next()) {
-			data.add(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5),
-					rs.getString(6), rs.getString(7), formatIvzDate(rs.getDate(8)), rs.getString(9), rs.getString(10),
-					rs.getString(11), rs.getString(12), rs.getString(13), rs.getString(14), rs.getString(15),
-					formatIvzDate(rs.getDate(16)), rs.getString(17), formatIvzDate(rs.getDate(18)),
-					formatIvzDate(rs.getDate(19)), rs.getString(20), rs.getString(21), rs.getString(22),
-					rs.getString(23), rs.getString(24), rs.getString(25), rs.getString(26));
-		}
-		printInput(data);
-		return data;
-	}
-
+	/**
+	 * @return Loaded large CSV example data/146k_persons.csv
+	 * @throws IOException
+	 */
 	protected static Data csvInit26AttrLarge() throws IOException {
 		DataSource source;
+		System.out.println("-----Before data PREPARATION: " + LocalDateTime.now());
 		source = DataSource.createCSVSource(CSV_LARGE, StandardCharsets.UTF_8, ';', true);
 		addColumns(source);
 		Data data = Data.create(source);
-		printInput(data);
 		System.out.println("------After data PREPARATION: " + LocalDateTime.now());
+		printInput(data);
 		return data;
 	}
-	
+
+	/**
+	 * @return Loaded small CSV example data/146k_persons.csv
+	 * @throws IOException
+	 */
 	protected static Data csvInit26AttrSmall() throws IOException {
 		DataSource source;
+		System.out.println("-----Before data PREPARATION: " + LocalDateTime.now());
 		source = DataSource.createCSVSource(CSV_SMALL, StandardCharsets.UTF_8, ';', true);
 		addColumns(source);
 		Data data = Data.create(source);
-		printInput(data);
 		System.out.println("------After data PREPARATION: " + LocalDateTime.now());
+		printInput(data);
 		return data;
 	}
-	
+
+	/**
+	 * Add columns for a csv file
+	 * 
+	 * @param source without columns
+	 * @return prepared dataSource
+	 */
 	private static DataSource addColumns(DataSource source) {
-		source.addColumn(ID, DataType.INTEGER);
+		source.addColumn(ID, DataType.INTEGER, true);
 		source.addColumn(ORGANISATION_NAME, DataType.STRING);
 		source.addColumn(ORGANISATION_ADDITIONAL_NAME, DataType.STRING);
 		source.addColumn(DEPARTMENT, DataType.STRING);
 		source.addColumn(OFFICIAL_NAME, DataType.STRING);
 		source.addColumn(ORIGINAL_NAME, DataType.STRING);
 		source.addColumn(FIRST_NAME, DataType.STRING);
-		source.addColumn(DATE_OF_BIRTH, DataType.DATE);
+		source.addColumn(DATE_OF_BIRTH, DataType.DATE, true);
 		source.addColumn(PLACE_OF_ORIGIN_NAME, DataType.STRING);
 		source.addColumn(SECOND_PLACE_OF_ORIGIN_NAME, DataType.STRING);
 		source.addColumn(PLACE_OF_BIRTH_COUNTRY, DataType.STRING);
@@ -188,22 +219,23 @@ public class ExamplePerson extends Example {
 		source.addColumn(LANGUAGE, DataType.STRING);
 		source.addColumn(NATIONALITY, DataType.STRING);
 		source.addColumn(COUNTRY_OF_ORIGIN, DataType.STRING);
-		source.addColumn(DATE_OF_DEATH, DataType.DATE);
+		source.addColumn(DATE_OF_DEATH, DataType.DATE, true);
 		source.addColumn(REMARK, DataType.STRING);
-		source.addColumn(LAST_MEDICAL_CHECKUP, DataType.DATE);
-		source.addColumn(NEXT_MEDICAL_CHECKUP, DataType.DATE);
+		source.addColumn(LAST_MEDICAL_CHECKUP, DataType.DATE, true);
+		source.addColumn(NEXT_MEDICAL_CHECKUP, DataType.DATE, true);
 		source.addColumn(PHONE_NUMBER, DataType.STRING);
 		source.addColumn(CELL_NUMBER, DataType.STRING);
 		source.addColumn(EMAIL, DataType.STRING);
 		source.addColumn(GUARDIANSHIP, DataType.STRING);
 		source.addColumn(CURRENT_TOWN, DataType.STRING);
-		source.addColumn(CURRENT_ZIP_CODE, DataType.INTEGER);
+		source.addColumn(CURRENT_ZIP_CODE, DataType.INTEGER, true);
 		source.addColumn(MANDATOR, DataType.STRING);
 		return source;
 	}
 
 	/**
 	 * Anonymization method ARX
+	 * 
 	 * @param data
 	 * @throws IOException
 	 */
@@ -215,56 +247,39 @@ public class ExamplePerson extends Example {
 		printResults(data);
 	}
 
-	protected static HierarchyBuilderRedactionBased<?> createHierarchy(Data data, String attribute) {
+	protected static HierarchyBuilderRedactionBased<?> createHierarchy(Data data, String attribute,
+			DataType<?> dataType) {
 		HierarchyBuilderRedactionBased<?> builder = HierarchyBuilderRedactionBased.create(Order.RIGHT_TO_LEFT,
 				Order.RIGHT_TO_LEFT, ' ', generateRandomString());
 		data.getDefinition().setAttributeType(attribute, builder);
-		data.getDefinition().setDataType(attribute, DataType.STRING);
+		data.getDefinition().setDataType(attribute, dataType);
 		return builder;
 	}
-	
-	protected static HierarchyBuilderIntervalBased<?> createZipCodeHierarchy(Data data, String attribute) {
-		HierarchyBuilderIntervalBased<Long> builderZipCode = HierarchyBuilderIntervalBased.create(DataType.INTEGER,
-		        new Range<Long>(0l, 0l, 0l),
-		        new Range<Long>(9999l, 9999l, 9999l));
-		
-		builderZipCode.setAggregateFunction(DataType.INTEGER.createAggregate().createIntervalFunction(true, false));
-		builderZipCode.addInterval(0l, 3000l);
-		builderZipCode.addInterval(3000l, 9999l);
-		
-		// Define grouping fanouts
-		builderZipCode.getLevel(0).addGroup(2);
-		builderZipCode.getLevel(1).addGroup(3);
-		
-		// Print specification
-        for (Interval<Long> interval1 : builderZipCode.getIntervals()) {
-            System.out.println(interval1);
-        }
-        
-        // Print specification
-        for (Level<Long> level : builderZipCode.getLevels()) {
-            System.out.println(level);
-        }
-        
-        // Print info about resulting levels
-        System.out.println("Resulting levels: " + Arrays.toString(builderZipCode.prepare(new String[] {
-                "3400",
-                "6123",
-                "7894",
-                "3400",
-                "7000",
-                "NULL"})));
-        
-        System.out.println("");
-        System.out.println("RESULT");
-        
-        // Print resulting hierarchy
-        printArray(builderZipCode.build().getHierarchy());
-        System.out.println("");
-        
-		data.getDefinition().setAttributeType(attribute, builderZipCode);
-		data.getDefinition().setDataType(attribute, DataType.INTEGER);
-		return builderZipCode;
+
+	protected static Data setInsensitiveAttr(Data data) {
+		data.getDefinition().setAttributeType(ID, AttributeType.INSENSITIVE_ATTRIBUTE);
+		data.getDefinition().setDataType(ID, DataType.INTEGER);
+		data.getDefinition().setAttributeType(GUARDIANSHIP, AttributeType.INSENSITIVE_ATTRIBUTE);
+		data.getDefinition().setDataType(GUARDIANSHIP, DataType.INTEGER);
+		return data;
+	}
+
+	protected static Data setQuasiIdentifierNames(Data data) {
+		createHierarchy(data, ORGANISATION_NAME, DataType.STRING);
+		createHierarchy(data, ORGANISATION_ADDITIONAL_NAME, DataType.STRING);
+		createHierarchy(data, DEPARTMENT, DataType.STRING);
+		createHierarchy(data, OFFICIAL_NAME, DataType.STRING);
+		createHierarchy(data, ORIGINAL_NAME, DataType.STRING);
+		createHierarchy(data, FIRST_NAME, DataType.STRING);
+		return data;
+	}
+
+	protected static Data setQuasiIdentifierDates(Data data) {
+		createDateAnonymizationSyntactic(data, DATE_OF_BIRTH);
+		createDateAnonymizationSyntactic(data, DATE_OF_DEATH);
+		createDateAnonymizationSyntactic(data, LAST_MEDICAL_CHECKUP);
+		createDateAnonymizationSyntactic(data, NEXT_MEDICAL_CHECKUP);
+		return data;
 	}
 
 	protected static void createDateAnonymizationSyntactic(Data data, String attribute) {
@@ -276,27 +291,101 @@ public class ExamplePerson extends Example {
 		data.getDefinition().setAttributeType(attribute, AttributeType.QUASI_IDENTIFYING_ATTRIBUTE);
 		data.getDefinition().setDataType(attribute, DataType.DATE);
 	}
-	
-	protected static Data  setInsensitiveAttr(Data data) {
-		data.getDefinition().setAttributeType(ID, AttributeType.INSENSITIVE_ATTRIBUTE);
-		data.getDefinition().setDataType(ID, DataType.INTEGER);	
-		data.getDefinition().setAttributeType(GUARDIANSHIP, AttributeType.INSENSITIVE_ATTRIBUTE);
-		data.getDefinition().setDataType(GUARDIANSHIP, DataType.INTEGER);	
-		return data;
+
+	protected static void createHierarchySex(Data data) {
+		DefaultHierarchy sex = Hierarchy.create();
+		sex.add("MALE", "FEMALE");
+		sex.add("FEMALE", "MALE");
+		sex.add("null", "MALE");
+		sex.add("", "MALE");
+		sex.add("NULL", "MALE");
+		data.getDefinition().setAttributeType(SEX, sex);
+		data.getDefinition().setDataType(SEX, DataType.STRING);
+		data.getDefinition().setHierarchy(SEX, sex);
 	}
-	
-	protected static Data setQuasiIdentifierNames(Data data) {
-		createHierarchy(data, ORGANISATION_NAME);
-		createHierarchy(data, ORGANISATION_ADDITIONAL_NAME);
-		createHierarchy(data, DEPARTMENT);
-		createHierarchy(data, OFFICIAL_NAME);
-		createHierarchy(data, ORIGINAL_NAME);
-		createHierarchy(data, FIRST_NAME);
-		return data;
+
+	protected static void createHierarchyLanguage(Data data, String attribute) {
+		DefaultHierarchy lang = Hierarchy.create();
+		for (String l : Locale.getISOLanguages()) {
+			lang.add(l, "D");
+		}
+		lang.add("A", "I");
+		lang.add("B", "I");
+		lang.add("C", "I");
+		lang.add("D", "I");
+		lang.add("E", "I");
+		lang.add("F", "I");
+		lang.add("G", "I");
+		lang.add("H", "I");
+		lang.add("I", "I");
+		lang.add("J", "I");
+		lang.add("K", "I");
+		lang.add("L", "I");
+		lang.add("M", "I");
+		lang.add("N", "I");
+		lang.add("O", "I");
+		lang.add("P", "I");
+		lang.add("Q", "I");
+		lang.add("R", "I");
+		lang.add("S", "I");
+		lang.add("T", "I");
+		lang.add("U", "I");
+		lang.add("V", "I");
+		lang.add("W", "I");
+		lang.add("X", "I");
+		lang.add("Y", "I");
+		lang.add("Z", "I");
+		lang.add("null", "E");
+		lang.add("", "I");
+		lang.add("NULL", "F");
+		data.getDefinition().setAttributeType(attribute, lang);
+		data.getDefinition().setDataType(attribute, DataType.STRING);
+		data.getDefinition().setHierarchy(attribute, lang);
+	}
+
+	protected static DefaultHierarchy createHierarchyCountry(Data data, String attribute) {
+		DefaultHierarchy country = Hierarchy.create();
+		for (String c : Locale.getISOCountries()) {
+			country.add(c, "USA");
+		}
+		country.add("AFG", "CH");country.add("AND", "CH");country.add("ARM", "CH");country.add("AUS", "CH");country.add("BDI", "CH");country.add("BDS", "CH");
+		country.add("BIH", "CH");country.add("BOL", "CH");country.add("BRN", "CH");country.add("BRU", "CH");country.add("CAM", "CH");country.add("CDN", "CH");
+		country.add("CHN", "CH");country.add("COM", "CH");country.add("DJI", "CH");country.add("DOM", "CH");country.add("EAK", "CH");country.add("EAT", "CH");
+		country.add("EAU", "CH");country.add("EST", "CH");country.add("ETH", "CH");country.add("FIN", "CH");country.add("FJI", "CH");country.add("GAB", "CH");
+		country.add("GBG", "CH");country.add("GBJ", "CH");country.add("GBM", "CH");country.add("GBZ", "CH");country.add("GCA", "CH");country.add("GUY", "CH");
+		country.add("HKJ", "CH");country.add("IND", "CH");country.add("IRL", "CH");country.add("IRQ", "CH");country.add("KIR", "CH");country.add("KWT", "CH");
+		country.add("LAO", "CH");country.add("LAR", "CH");country.add("MAL", "CH");country.add("MEX", "CH");country.add("MGL", "CH");country.add("MNE", "CH");
+		country.add("MOC", "CH");country.add("MYA", "CH");country.add("NAM", "CH");country.add("NAU", "CH");country.add("NEP", "CH");country.add("NIC", "CH");
+		country.add("PAL", "CH");country.add("PNG", "CH");country.add("PRK", "CH");country.add("RCA", "CH");country.add("RCB", "CH");country.add("RCH", "CH");
+		country.add("RDC", "CH");country.add("RIM", "CH");country.add("RMM", "CH");country.add("ROK", "CH");country.add("ROU", "CH");country.add("RSM", "CH");
+		country.add("RUS", "CH");country.add("RWA", "CH");country.add("SCG", "CH");country.add("SCN", "CH");country.add("SGC", "CH");country.add("SGP", "CH");
+		country.add("SLO", "CH");country.add("SME", "CH");country.add("SOM", "CH");country.add("SRB", "CH");country.add("SUD", "CH");country.add("SYR", "CH");
+		country.add("TCH", "CH");country.add("TWN", "CH");country.add("UAE", "CH");country.add("UNK", "CH");country.add("USA", "CH");country.add("WAG", "CH");
+		country.add("WAL", "CH");country.add("WAN", "CH");country.add("XXX", "CH");country.add("YMN", "CH");country.add("ITA", "CH");country.add("SPA", "CH");
+		country.add("IRZ", "SPA");country.add("RZK", "SPA");country.add("HKZ", "SPA");country.add("NAU", "CH");country.add("111", "DE");country.add(" CH", "DE");
+		country.add("AUT", "DE");country.add("BHI", "DE");country.add("BRU", "DE");country.add("CEI", "DE");country.add("CHN", "DE");country.add("CH6", "DE");
+		country.add("COM", "DE");country.add("CRO", "DE");country.add("CSF", "DE");country.add("CSI", "DE");country.add("DDR", "DE");country.add("D-O", "DE");
+		country.add("ERY", "DE");country.add("EUA", "DE");country.add("FRU", "DE");country.add("FSM", "DE");country.add("GBA", "DE");country.add("GRI", "DE");
+		country.add("ISR", "DE");country.add("JOR", "DE");country.add("KOR", "DE");country.add("PAK", "DE");country.add("PLW", "DE");country.add("POL", "DE");
+		country.add("PTM", "DE");country.add("ROC", "DE");country.add("RPB", "DE");country.add("RPC", "DE");country.add("RZK", "DE");country.add("SAL", "DE");
+		country.add("scg", "DE");country.add("SRI", "DE");country.add("STA", "DE");country.add("STL", "DE");country.add("THA", "DE");country.add("TIB", "DE");
+		country.add("TOG", "DE");country.add("TWN", "DE");country.add("VRC", "DE");country.add("ZRE", "DE");country.add("ZZZ", "DE");country.add("A", "DE");
+		country.add("B", "DE");country.add("C", "DE");country.add("D", "DE");country.add("E", "DE");country.add("F", "DE");country.add("G", "DE");
+		country.add("H", "DE");country.add("I", "DE");country.add("J", "DE");country.add("K", "DE");country.add("L", "DE");country.add("M", "DE");
+		country.add("N", "DE");country.add("O", "DE");country.add("P", "DE");country.add("Q", "DE");country.add("R", "DE");country.add("S", "DE");
+		country.add("T", "DE");country.add("U", "DE");country.add("V", "DE");country.add("W", "DE");country.add("X", "DE");country.add("Y", "DE");
+		country.add("Z", "DE");country.add("TU", "CH");country.add("YU", "CH");country.add("RI", "CH");country.add("RL", "CH");country.add("FL", "CH");
+		country.add("RA", "CH");country.add("RC", "CH");country.add("YV", "CH");country.add("RP", "CH");country.add("KS", "CH");country.add("RH", "CH");
+		country.add("RG", "CH");country.add("RN", "CH");country.add("GZ", "CH");country.add("null", "FR");country.add("", "ITA");country.add("NULL", "");
+		data.getDefinition().setDataType(attribute, DataType.STRING);
+		data.getDefinition().setHierarchy(attribute, country);
+		data.getDefinition().setAttributeType(attribute, country);
+		return country;
 	}
 
 	/**
 	 * Print data input before anonymization
+	 * 
 	 * @param data
 	 */
 	protected static void printInput(Data data) {
@@ -309,6 +398,7 @@ public class ExamplePerson extends Example {
 
 	/**
 	 * Print data output after anonymization
+	 * 
 	 * @param data
 	 */
 	protected static void printResults(Data data) {
@@ -330,7 +420,7 @@ public class ExamplePerson extends Example {
 		char c = (char) (r.nextInt(26) + 'a');
 		return c;
 	}
-	
+
 	protected static char generateRandomInt() {
 		String r = RandomStringUtils.randomNumeric(10);
 		char c = r.charAt(0);

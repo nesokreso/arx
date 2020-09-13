@@ -25,7 +25,7 @@ import org.deidentifier.arx.criteria.KMap;
 
 /**
  * This class represents an example for person data anonymized with K-Map which is based on K-Anonymity.
- *
+ * 
  * @author Nenad Jevdjenic
  */
 public class ExamplePersonKMap extends ExamplePerson {
@@ -37,12 +37,11 @@ public class ExamplePersonKMap extends ExamplePerson {
 			Data data = csvInit26AttrLarge();
 			data = setInsensitiveAttr(data);
 			data = setQuasiIdentifierNames(data);
-			
-			createHierarchy(data, CURRENT_ZIP_CODE);
 			createDateAnonymizationSyntactic(data, DATE_OF_BIRTH);
 			createDateAnonymizationSyntactic(data, DATE_OF_DEATH);
 			createDateAnonymizationSyntactic(data, LAST_MEDICAL_CHECKUP);
 			createDateAnonymizationSyntactic(data, NEXT_MEDICAL_CHECKUP);
+			
 			ARXPopulationModel europeanPopulationModel = ARXPopulationModel.create(Region.EUROPE);
 			KMap kMap = new KMap(3, 0.7d, europeanPopulationModel);
 			config = ARXConfiguration.create();

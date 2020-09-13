@@ -17,42 +17,36 @@
 
 package org.deidentifier.arx.examples.person;
 
-import java.nio.charset.Charset;
-import java.time.LocalDateTime;
-import java.util.Random;
-
-import org.apache.commons.lang.RandomStringUtils;
 import org.deidentifier.arx.ARXConfiguration;
 import org.deidentifier.arx.ARXPopulationModel;
 import org.deidentifier.arx.Data;
 import org.deidentifier.arx.ARXPopulationModel.Region;
-import org.deidentifier.arx.criteria.KMap;
+import org.deidentifier.arx.criteria.PopulationUniqueness;
 
 /**
- * This class represents an example for person data anonymized with K-Map which
- * is based on K-Anonymity.
- *
+ * This class represents an example for person data anonymized with the Population Uniqueness privacy model.
+ * 
  * @author Nenad Jevdjenic
  */
-public class ExamplePersonRandomString extends ExamplePerson {
+public class ExamplePersonPopulationUniqueness extends ExamplePerson {
 	/**
 	 * Entry point.
 	 */
 	public static void main(String[] args) {
 		try {
-			Random r = new Random();
-			char c = (char) (r.nextInt(260) + 'a');
-			System.out.println(c);
-			byte[] array = new byte[7]; // length is bounded by 7
-			new Random().nextBytes(array);
-			String generatedString = new String(array, Charset.forName("UTF-8"));
+			Data data = csvInit26AttrLarge();
+			data = setInsensitiveAttr(data);
+			data = setQuasiIdentifierNames(data);
+			createDateAnonymizationSyntactic(data, DATE_OF_BIRTH);
+			createDateAnonymizationSyntactic(data, DATE_OF_DEATH);
+			createDateAnonymizationSyntactic(data, LAST_MEDICAL_CHECKUP);
+			createDateAnonymizationSyntactic(data, NEXT_MEDICAL_CHECKUP);
 
-			System.out.println(generatedString);
-			int length = 10;
-			boolean useLetters = true;
-			boolean useNumbers = false;
-			String generatedString2 = RandomStringUtils.random(length, useLetters, useNumbers);
-			System.out.println(generatedString2);
+			ARXPopulationModel europeanPopulationmodel = ARXPopulationModel.create(Region.EUROPE);
+			config = ARXConfiguration.create();
+			config.setSuppressionLimit(1d);
+			config.addPrivacyModel(new PopulationUniqueness(0.9, europeanPopulationmodel));
+			runAnonymization(data);
 		} catch (Exception e) {
 			System.out.println(e);
 		}

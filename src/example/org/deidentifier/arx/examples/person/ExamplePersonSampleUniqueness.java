@@ -19,13 +19,12 @@ package org.deidentifier.arx.examples.person;
 
 import org.deidentifier.arx.ARXConfiguration;
 import org.deidentifier.arx.Data;
-import org.deidentifier.arx.criteria.AverageReidentificationRisk;
 import org.deidentifier.arx.criteria.SampleUniqueness;
 import org.deidentifier.arx.metric.Metric;
 
 /**
- * This class represents a test for an oracle db with 26 attributes.
- *
+ * This class represents an example for person data anonymized with the Sample Uniqueness privacy model.
+ * 
  * @author Nenad Jevdjenic
  */
 public class ExamplePersonSampleUniqueness extends ExamplePerson {
@@ -35,18 +34,15 @@ public class ExamplePersonSampleUniqueness extends ExamplePerson {
 	public static void main(String[] args) {
 		try {
 			Data data = csvInit26AttrLarge();
-
 			data = setInsensitiveAttr(data);
 			data = setQuasiIdentifierNames(data);
-
-			createHierarchy(data, CURRENT_ZIP_CODE);
 			createDateAnonymizationSyntactic(data, DATE_OF_BIRTH);
 			createDateAnonymizationSyntactic(data, DATE_OF_DEATH);
 			createDateAnonymizationSyntactic(data, LAST_MEDICAL_CHECKUP);
 			createDateAnonymizationSyntactic(data, NEXT_MEDICAL_CHECKUP);
 
-			config = ARXConfiguration.create(0.1d, Metric.createPrecomputedLossMetric(0.1d));
-			config.addPrivacyModel(new SampleUniqueness(0.11d));
+			config = ARXConfiguration.create(1d, Metric.createAECSMetric());
+			config.addPrivacyModel(new SampleUniqueness(0.7d));
 			runAnonymization(data);
 		} catch (Exception e) {
 			System.out.println(e);

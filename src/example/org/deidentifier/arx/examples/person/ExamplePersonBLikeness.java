@@ -25,7 +25,7 @@ import org.deidentifier.arx.criteria.KAnonymity;
 import org.deidentifier.arx.metric.Metric;
 
 /**
- * This class represents an example for person data anonymized with β-Likeness.
+ * This class represents an example for person data anonymized with the β-Likeness privacy model.
  *
  * @author Nenad Jevdjenic
  */
@@ -36,10 +36,9 @@ public class ExamplePersonBLikeness extends ExamplePersonKAnonymity {
 	public static void main(String[] args) {
 		try {
 			Data data = csvInit26AttrLarge();
-			
 			data = setInsensitiveAttr(data);
 			data = setQuasiIdentifierNames(data);
-			createDateAnonymizationSyntactic(data, DATE_OF_BIRTH);
+			data = setQuasiIdentifierDates(data);
 			
 	        config = ARXConfiguration.create(1d, Metric.createLossMetric());
 	        config.addPrivacyModel(new KAnonymity(2));

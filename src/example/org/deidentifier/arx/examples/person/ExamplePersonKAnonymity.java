@@ -18,6 +18,7 @@
 package org.deidentifier.arx.examples.person;
 
 import org.deidentifier.arx.ARXConfiguration;
+import org.deidentifier.arx.AttributeType;
 import org.deidentifier.arx.Data;
 import org.deidentifier.arx.DataType;
 import org.deidentifier.arx.aggregates.HierarchyBuilderRedactionBased;
@@ -26,8 +27,8 @@ import org.deidentifier.arx.criteria.KAnonymity;
 import org.deidentifier.arx.metric.Metric;
 
 /**
- * This class represents an example for person data anonymized with K-Anonymity.
- *
+ * This class represents an example for person data anonymized with K-Anonymity privacy model.
+ * 
  * @author Nenad Jevdjenic
  */
 public class ExamplePersonKAnonymity extends ExamplePerson {
@@ -36,33 +37,53 @@ public class ExamplePersonKAnonymity extends ExamplePerson {
 	 */
 	public static void main(String[] args) {
 		try {
-			Data data = csvInit26AttrLarge();
-
+			Data data = csvInit26AttrSmall();
 			data = setInsensitiveAttr(data);
-			data = setQuasiIdentifierNames(data);
-
-	        HierarchyBuilderRedactionBased<?> builder = HierarchyBuilderRedactionBased.create(Order.RIGHT_TO_LEFT,
-					Order.RIGHT_TO_LEFT, ' ', generateRandomInt());
-			data.getDefinition().setAttributeType(CURRENT_ZIP_CODE, builder);
-			data.getDefinition().setDataType(CURRENT_ZIP_CODE, DataType.INTEGER);
-			
-			createDateAnonymizationSyntactic(data, DATE_OF_BIRTH);
-			createDateAnonymizationSyntactic(data, DATE_OF_DEATH);
-			createDateAnonymizationSyntactic(data, LAST_MEDICAL_CHECKUP);
-			createDateAnonymizationSyntactic(data, NEXT_MEDICAL_CHECKUP);
-
-			setKAnonymity();
+			createHierarchy(data, ORGANISATION_NAME, DataType.STRING);
+			createHierarchy(data, ORGANISATION_ADDITIONAL_NAME, DataType.STRING);
+			createHierarchy(data, DEPARTMENT, DataType.STRING);
+			createHierarchy(data, OFFICIAL_NAME, DataType.STRING);
+			createHierarchy(data, ORIGINAL_NAME, DataType.STRING);
+			createHierarchy(data, FIRST_NAME, DataType.STRING);
+//			createHierarchy(data, DATE_OF_BIRTH, DataType.DATE, true);
+			createHierarchy(data, PLACE_OF_ORIGIN_NAME, DataType.STRING);
+			createHierarchy(data, SECOND_PLACE_OF_ORIGIN_NAME, DataType.STRING);
+			createHierarchy(data, PLACE_OF_BIRTH_COUNTRY, DataType.STRING);
+			createHierarchy(data, SEX, DataType.STRING);
+			createHierarchy(data, LANGUAGE, DataType.STRING);
+			createHierarchy(data, NATIONALITY, DataType.STRING);
+			createHierarchy(data, COUNTRY_OF_ORIGIN, DataType.STRING);
+//			createHierarchy(data, DATE_OF_DEATH, DataType.DATE, true);
+			createHierarchy(data, REMARK, DataType.STRING);
+//			createHierarchy(data, LAST_MEDICAL_CHECKUP, DataType.DATE, true);
+//			createHierarchy(data, NEXT_MEDICAL_CHECKUP, DataType.DATE, true);
+			createHierarchy(data, PHONE_NUMBER, DataType.STRING);
+			createHierarchy(data, CELL_NUMBER, DataType.STRING);
+			createHierarchy(data, EMAIL, DataType.STRING);
+			createHierarchy(data, GUARDIANSHIP, DataType.STRING);
+			createHierarchy(data, CURRENT_TOWN, DataType.STRING);
+//			createHierarchy(data, CURRENT_ZIP_CODE, DataType.INTEGER, true);
+			createHierarchy(data, MANDATOR, DataType.STRING);
+//			data = setQuasiIdentifierNames(data);
+//			createHierarchy(data, OFFICIAL_NAME, DataType.STRING);
+//			createHierarchySex(data);
+			createHierarchyCountry(data, COUNTRY_OF_ORIGIN);
+			createHierarchyCountry(data, NATIONALITY);
+//			createHierarchyLanguage(data, LANGUAGE);
+			data = setQuasiIdentifierDates(data);
+			config = ARXConfiguration.create();
+			config.addPrivacyModel(new KAnonymity(4));
+	        config.setSuppressionLimit(0d);
+	        config.setQualityModel(Metric.createEntropyMetric());
 			runAnonymization(data);
 		} catch (Exception e) {
 			System.out.println(e);
 		}
 	}
 	
-	protected static ARXConfiguration setKAnonymity() {
-		config = ARXConfiguration.create();
-		config.addPrivacyModel(new KAnonymity(2));
-		config.setSuppressionLimit(1d);
-		config.setQualityModel(Metric.createEntropyMetric());
-		return config;
-	}
+	private static HierarchyBuilderRedactionBased<?> createHierarchy() {
+        HierarchyBuilderRedactionBased<?> builderOfficialName = HierarchyBuilderRedactionBased
+                .create(Order.RIGHT_TO_LEFT, Order.RIGHT_TO_LEFT, ' ', generateRandomString());
+        return builderOfficialName;
+    }
 }

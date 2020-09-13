@@ -17,13 +17,16 @@
 
 package org.deidentifier.arx.examples.person;
 
+import org.deidentifier.arx.ARXConfiguration;
 import org.deidentifier.arx.AttributeType;
 import org.deidentifier.arx.Data;
+import org.deidentifier.arx.criteria.KAnonymity;
 import org.deidentifier.arx.criteria.RecursiveCLDiversity;
+import org.deidentifier.arx.metric.Metric;
 
 /**
- * This class represents an example for person data anonymized with L-Diversity.
- *
+ * This class represents an example for person data anonymized with the L-Diversity privacy model which is based on K-Anonymity.
+ * 
  * @author Nenad Jevdjenic
  */
 public class ExamplePersonLDiversity extends ExamplePersonKAnonymity {
@@ -39,7 +42,10 @@ public class ExamplePersonLDiversity extends ExamplePersonKAnonymity {
 			createDateAnonymizationSyntactic(data, DATE_OF_BIRTH);
 			
 	        data.getDefinition().setAttributeType(PHONE_NUMBER, AttributeType.SENSITIVE_ATTRIBUTE);
-	        setKAnonymity();
+	        config = ARXConfiguration.create();
+			config.addPrivacyModel(new KAnonymity(2));
+			config.setSuppressionLimit(1d);
+			config.setQualityModel(Metric.createEntropyMetric());
 	        config.addPrivacyModel(new RecursiveCLDiversity(PHONE_NUMBER, 3.0d, 2));
 	        runAnonymization(data);
 		} catch (Exception e) {
