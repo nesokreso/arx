@@ -33,7 +33,7 @@ public class ExamplePersonKAnonymity extends ExamplePerson {
 	 */
 	public static void main(String[] args) {
 		try {
-			Data data = csvInit26AttrSmall();
+			Data data = csvInit26AttrLarge();
 			data = setInsensitiveAttr(data);
 			data = setQuasiIdentifiersString(data);
 			createHierarchySex(data);
@@ -44,10 +44,10 @@ public class ExamplePersonKAnonymity extends ExamplePerson {
 			data = setQuasiIdentifiersInteger(data);
 			
 			config = ARXConfiguration.create();
-			config.addPrivacyModel(new KAnonymity(6));
+			config.addPrivacyModel(new KAnonymity(3));
 			config.setSuppressionLimit(1);
 			
-	        config.setQualityModel(Metric.createLossMetric());
+//	        config.setQualityModel(Metric.createLossMetric());
 			runAnonymization(data);
 		} catch (Exception e) {
 			System.out.println(e);
