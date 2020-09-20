@@ -20,6 +20,7 @@ package org.deidentifier.arx.examples.person;
 import org.deidentifier.arx.ARXConfiguration;
 import org.deidentifier.arx.ARXPopulationModel;
 import org.deidentifier.arx.Data;
+import org.deidentifier.arx.DataType;
 import org.deidentifier.arx.ARXPopulationModel.Region;
 import org.deidentifier.arx.criteria.PopulationUniqueness;
 
@@ -36,14 +37,15 @@ public class ExamplePersonPopulationUniqueness extends ExamplePerson {
 		try {
 			Data data = csvInit26AttrLarge();
 			data = setInsensitiveAttr(data);
-			data = setQuasiIdentifiersString(data);
-//			data = setQuasiIdentifiersDate(data);
-			data = setQuasiIdentifiersInteger(data);
-
+			createHierarchy(data, OFFICIAL_NAME, DataType.STRING);
+			createHierarchy(data, ORIGINAL_NAME, DataType.STRING);
+			createHierarchy(data, FIRST_NAME, DataType.STRING);
+			data = setQuasiIdentifiersDate(data);
 			ARXPopulationModel europeanPopulationmodel = ARXPopulationModel.create(Region.EUROPE);
 			config = ARXConfiguration.create();
+			config.addPrivacyModel(new PopulationUniqueness(0.99, europeanPopulationmodel));
 			config.setSuppressionLimit(1d);
-			config.addPrivacyModel(new PopulationUniqueness(0.98, europeanPopulationmodel));
+			
 			runAnonymization(data);
 		} catch (Exception e) {
 			System.out.println(e);
