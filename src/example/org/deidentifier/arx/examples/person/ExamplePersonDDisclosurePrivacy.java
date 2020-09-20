@@ -17,12 +17,9 @@
 
 package org.deidentifier.arx.examples.person;
 
-import org.deidentifier.arx.ARXConfiguration;
 import org.deidentifier.arx.AttributeType;
 import org.deidentifier.arx.Data;
 import org.deidentifier.arx.criteria.DDisclosurePrivacy;
-import org.deidentifier.arx.criteria.KAnonymity;
-import org.deidentifier.arx.metric.Metric;
 
 /**
  * This class represents an example for person data anonymized with the δ-Disclosure Privacy privacy model.
