@@ -17,19 +17,16 @@
 
 package org.deidentifier.arx.examples.person;
 
-import org.deidentifier.arx.ARXConfiguration;
 import org.deidentifier.arx.AttributeType;
 import org.deidentifier.arx.Data;
 import org.deidentifier.arx.criteria.BasicBLikeness;
-import org.deidentifier.arx.criteria.KAnonymity;
-import org.deidentifier.arx.metric.Metric;
 
 /**
  * This class represents an example for person data anonymized with the β-Likeness privacy model.
  *
  * @author Nenad Jevdjenic
  */
-public class ExamplePersonBLikeness extends ExamplePerson {
+public class ExamplePersonBLikeness extends ExamplePersonKAnonymity {
 	/**
 	 * Entry point.
 	 */
@@ -37,13 +34,14 @@ public class ExamplePersonBLikeness extends ExamplePerson {
 		try {
 			Data data = csvInit26AttrLarge();
 			data = setInsensitiveAttr(data);
-			data = setQuasiIdentifiersString(data);
-			data = setQuasiIdentifiersDate(data);
+			data = setQuasiIdentifiers(data);
+			setKAnonymity();
 			
-	        config = ARXConfiguration.create(1d, Metric.createLossMetric());
-	        config.addPrivacyModel(new KAnonymity(2));
-	        data.getDefinition().setAttributeType(PHONE_NUMBER, AttributeType.SENSITIVE_ATTRIBUTE);
-	        config.addPrivacyModel(new BasicBLikeness(PHONE_NUMBER, 3));
+	        data.getDefinition().setAttributeType(PLACE_OF_ORIGIN_NAME, AttributeType.SENSITIVE_ATTRIBUTE);
+	        config.addPrivacyModel(new BasicBLikeness(PLACE_OF_ORIGIN_NAME, 3));
+	        data.getDefinition().setAttributeType(SECOND_PLACE_OF_ORIGIN_NAME, AttributeType.SENSITIVE_ATTRIBUTE);
+	        config.addPrivacyModel(new BasicBLikeness(SECOND_PLACE_OF_ORIGIN_NAME, 3));
+	        
 	        runAnonymization(data);
 		} catch (Exception e) {
 			System.out.println(e);
