@@ -260,6 +260,8 @@ public class ExamplePerson extends Example {
 		createHierarchySex(data);
 		createHierarchyCountry(data, COUNTRY_OF_ORIGIN);
 		createHierarchyCountry(data, NATIONALITY);
+		createHierarchyCanton(data, MANDATOR);
+		createHierarchyLanguage(data, LANGUAGE);
 		data = setQuasiIdentifiersDate(data);
 		data = setQuasiIdentifiersInteger(data);
 		return data;
@@ -376,38 +378,32 @@ public class ExamplePerson extends Example {
 		for (String l : Locale.getISOLanguages()) {
 			lang.add(l, "D");
 		}
-		lang.add("A", "I");
-		lang.add("B", "I");
-		lang.add("C", "I");
-		lang.add("D", "I");
-		lang.add("E", "I");
-		lang.add("F", "I");
-		lang.add("G", "I");
-		lang.add("H", "I");
-		lang.add("I", "I");
-		lang.add("J", "I");
-		lang.add("K", "I");
-		lang.add("L", "I");
-		lang.add("M", "I");
-		lang.add("N", "I");
-		lang.add("O", "I");
-		lang.add("P", "I");
-		lang.add("Q", "I");
-		lang.add("R", "I");
-		lang.add("S", "I");
-		lang.add("T", "I");
-		lang.add("U", "I");
-		lang.add("V", "I");
-		lang.add("W", "I");
-		lang.add("X", "I");
-		lang.add("Y", "I");
-		lang.add("Z", "I");
-		lang.add("null", "E");
-		lang.add("", "I");
-		lang.add("NULL", "F");
+		lang.add("A", "E");lang.add("B", "E");lang.add("C", "E");lang.add("D", "E");lang.add("E", "E");lang.add("F", "E");lang.add("G", "E");
+		lang.add("H", "D");lang.add("I", "D");lang.add("J", "D");lang.add("K", "D");lang.add("L", "D");lang.add("M", "D");lang.add("N", "D");
+		lang.add("O", "F");lang.add("P", "F");lang.add("Q", "F");lang.add("R", "F");lang.add("S", "F");lang.add("T", "F");lang.add("U", "F");
+		lang.add("V", "I");lang.add("W", "I");lang.add("X", "I");lang.add("Y", "I");lang.add("Z", "I");
+		lang.add("null", "E");lang.add("", "I");lang.add("NULL", "F");
 		data.getDefinition().setAttributeType(attribute, lang);
 		data.getDefinition().setDataType(attribute, DataType.STRING);
 		data.getDefinition().setHierarchy(attribute, lang);
+	}
+	
+	/**
+	 * @param data
+	 * @param attribute
+	 */
+	protected static void createHierarchyCanton(Data data, String attribute) {
+		DefaultHierarchy canton = Hierarchy.create();
+		canton.add("M", "ZH");canton.add("##", "ZH");canton.add("AG", "ZH");canton.add("AI", "ZH");canton.add("AR", "ZH");canton.add("AS", "ZH");
+		canton.add("BA", "GE");canton.add("BE", "GE");canton.add("BL", "GE");canton.add("BP", "GE");canton.add("BS", "GE");canton.add("BU", "GE");
+		canton.add("FL", "BS");canton.add("FR", "BS");canton.add("GE", "BS");canton.add("GL", "BS");canton.add("GR", "BS");canton.add("JU", "BS");
+		canton.add("LU", "ZG");canton.add("NE", "ZG");canton.add("NW", "ZG");canton.add("OW", "ZG");canton.add("PT", "ZG");canton.add("RP", "ZG");
+		canton.add("SG", "SO");canton.add("SH", "SO");canton.add("SO", "SO");canton.add("SZ", "SO");canton.add("TG", "SO");canton.add("TI", "SO");
+		canton.add("UR", "ZH");canton.add("VD", "ZH");canton.add("VS", "ZH");canton.add("ZG", "ZH");canton.add("ZH", "ZH");canton.add("12", "ZH");
+		canton.add("ZU", "SH");canton.add("null", "BE");canton.add("", "BE");canton.add("NULL", "BE");
+		data.getDefinition().setAttributeType(attribute, canton);
+		data.getDefinition().setDataType(attribute, DataType.STRING);
+		data.getDefinition().setHierarchy(attribute, canton);
 	}
 
 	/**
@@ -420,15 +416,15 @@ public class ExamplePerson extends Example {
 		for (String c : Locale.getISOCountries()) {
 			country.add(c, "USA");
 		}
-		country.add("AFG", "CH");country.add("AND", "CH");country.add("ARM", "CH");country.add("AUS", "CH");country.add("BDI", "CH");country.add("BDS", "CH");
-		country.add("BIH", "CH");country.add("BOL", "CH");country.add("BRN", "CH");country.add("BRU", "CH");country.add("CAM", "CH");country.add("CDN", "CH");
-		country.add("CHN", "CH");country.add("COM", "CH");country.add("DJI", "CH");country.add("DOM", "CH");country.add("EAK", "CH");country.add("EAT", "CH");
-		country.add("EAU", "CH");country.add("EST", "CH");country.add("ETH", "CH");country.add("FIN", "CH");country.add("FJI", "CH");country.add("GAB", "CH");
-		country.add("GBG", "CH");country.add("GBJ", "CH");country.add("GBM", "CH");country.add("GBZ", "CH");country.add("GCA", "CH");country.add("GUY", "CH");
-		country.add("HKJ", "CH");country.add("IND", "CH");country.add("IRL", "CH");country.add("IRQ", "CH");country.add("KIR", "CH");country.add("KWT", "CH");
-		country.add("LAO", "CH");country.add("LAR", "CH");country.add("MAL", "CH");country.add("MEX", "CH");country.add("MGL", "CH");country.add("MNE", "CH");
-		country.add("MOC", "CH");country.add("MYA", "CH");country.add("NAM", "CH");country.add("NAU", "CH");country.add("NEP", "CH");country.add("NIC", "CH");
-		country.add("PAL", "CH");country.add("PNG", "CH");country.add("PRK", "CH");country.add("RCA", "CH");country.add("RCB", "CH");country.add("RCH", "CH");
+		country.add("AFG", "FR");country.add("AND", "FR");country.add("ARM", "FR");country.add("AUS", "FR");country.add("BDI", "FR");country.add("BDS", "FR");
+		country.add("BIH", "FR");country.add("BOL", "FR");country.add("BRN", "FR");country.add("BRU", "FR");country.add("CAM", "FR");country.add("CDN", "FR");
+		country.add("CHN", "FR");country.add("COM", "FR");country.add("DJI", "FR");country.add("DOM", "FR");country.add("EAK", "FR");country.add("EAT", "FR");
+		country.add("EAU", "FR");country.add("EST", "FR");country.add("ETH", "FR");country.add("FIN", "FR");country.add("FJI", "FR");country.add("GAB", "FR");
+		country.add("GBG", "FR");country.add("GBJ", "FR");country.add("GBM", "FR");country.add("GBZ", "FR");country.add("GCA", "FR");country.add("GUY", "FR");
+		country.add("HKJ", "IT");country.add("IND", "IT");country.add("IRL", "IT");country.add("IRQ", "IT");country.add("KIR", "IT");country.add("KWT", "IT");
+		country.add("LAO", "IT");country.add("LAR", "IT");country.add("MAL", "IT");country.add("MEX", "IT");country.add("MGL", "IT");country.add("MNE", "IT");
+		country.add("MOC", "IT");country.add("MYA", "IT");country.add("NAM", "IT");country.add("NAU", "IT");country.add("NEP", "IT");country.add("NIC", "IT");
+		country.add("PAL", "IT");country.add("PNG", "IT");country.add("PRK", "IT");country.add("RCA", "IT");country.add("RCB", "IT");country.add("RCH", "IT");
 		country.add("RDC", "CH");country.add("RIM", "CH");country.add("RMM", "CH");country.add("ROK", "CH");country.add("ROU", "CH");country.add("RSM", "CH");
 		country.add("RUS", "CH");country.add("RWA", "CH");country.add("SCG", "CH");country.add("SCN", "CH");country.add("SGC", "CH");country.add("SGP", "CH");
 		country.add("SLO", "CH");country.add("SME", "CH");country.add("SOM", "CH");country.add("SRB", "CH");country.add("SUD", "CH");country.add("SYR", "CH");
