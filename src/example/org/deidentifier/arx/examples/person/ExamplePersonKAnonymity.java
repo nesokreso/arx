@@ -19,8 +19,8 @@ package org.deidentifier.arx.examples.person;
 
 import org.deidentifier.arx.ARXConfiguration;
 import org.deidentifier.arx.Data;
+import org.deidentifier.arx.DataType;
 import org.deidentifier.arx.criteria.KAnonymity;
-import org.deidentifier.arx.metric.Metric;
 
 /**
  * This class represents an example for person data anonymized with K-Anonymity privacy model.
@@ -35,22 +35,19 @@ public class ExamplePersonKAnonymity extends ExamplePerson {
 		try {
 			Data data = csvInit26AttrLarge();
 			data = setInsensitiveAttr(data);
-			data = setQuasiIdentifiersString(data);
-			createHierarchySex(data);
-			createHierarchyCountry(data, COUNTRY_OF_ORIGIN);
-			createHierarchyCountry(data, NATIONALITY);
+			data = setQuasiIdentifiers(data);
+			setKAnonymity();
 			
-			data = setQuasiIdentifiersDate(data);
-			data = setQuasiIdentifiersInteger(data);
-			
-			config = ARXConfiguration.create();
-			config.addPrivacyModel(new KAnonymity(3));
-			config.setSuppressionLimit(1);
-			
-//	        config.setQualityModel(Metric.createLossMetric());
 			runAnonymization(data);
 		} catch (Exception e) {
 			System.out.println(e);
 		}
+	}
+	
+	protected static void setKAnonymity() {
+		config = ARXConfiguration.create();
+		config.setHeuristicSearchStepLimit(Integer.MAX_VALUE);
+		config.addPrivacyModel(new KAnonymity(2));
+		config.setSuppressionLimit(1);
 	}
 }

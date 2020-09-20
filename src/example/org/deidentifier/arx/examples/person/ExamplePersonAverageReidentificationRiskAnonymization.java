@@ -33,13 +33,12 @@ public class ExamplePersonAverageReidentificationRiskAnonymization extends Examp
 		try {
 			Data data = csvInit26AttrLarge();
 			data = setInsensitiveAttr(data);
-			data = setQuasiIdentifiersString(data);
-			data = setQuasiIdentifiersDate(data);
-
+			data = setQuasiIdentifiers(data);
 			config = ARXConfiguration.create();
-			config.setSuppressionLimit(1d);
-			config.addPrivacyModel(new AverageReidentificationRisk(0.4d));
-			runAnonymization(data);
+			config.addPrivacyModel(new AverageReidentificationRisk(0.94d));
+	        config.setSuppressionLimit(1d);
+
+	        runAnonymization(data);
 		} catch (Exception e) {
 			System.out.println(e);
 		}
