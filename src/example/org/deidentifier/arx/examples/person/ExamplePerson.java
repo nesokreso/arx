@@ -44,9 +44,11 @@ import org.deidentifier.arx.AttributeType.Hierarchy;
 import org.deidentifier.arx.AttributeType.MicroAggregationFunction;
 import org.deidentifier.arx.AttributeType.Hierarchy.DefaultHierarchy;
 import org.deidentifier.arx.Data;
+import org.deidentifier.arx.DataHandle;
 import org.deidentifier.arx.aggregates.HierarchyBuilderRedactionBased;
 import org.deidentifier.arx.aggregates.HierarchyBuilderRedactionBased.Order;
 import org.deidentifier.arx.examples.Example;
+import org.deidentifier.arx.exceptions.RollbackRequiredException;
 
 /**
  * This is the base class for many examples based on CSV and DB input data with
@@ -87,16 +89,16 @@ public class ExamplePerson extends Example {
 	protected static ARXConfiguration config;
 	protected static ARXResult result;
 	protected static final SimpleDateFormat arxFormat = new SimpleDateFormat("dd.MM.yyyy");
+	protected static final double oMin = 0.01d;
 	/** CSV Input files */
 	protected static final String CSV_SMALL = "data/20_persons.csv";
 	protected static final String CSV_LARGE = "data/146k_persons.csv";
 	/** DB connection settings */
-	protected static final String ROWNUM = "100000";
+	protected static final String ROWNUM = "10000";
 	protected static final String TABLE = "PERSON_ARX";
-	protected static final String dbUrl = "jdbc:oracle:thin:@172.18.60.83:1521/IVZPDB";
+	protected static final String dbUrl = "jdbc:oracle:thin:@localhost:1521/IVZPDB";
 	protected static final String dbUser = "ARX";
 	protected static final String dbPw = "ARX";
-	protected static boolean syntactic;
 
 	/**
 	 * Initializes data anonymization input with 8 attributes from defined db table.
@@ -234,20 +236,6 @@ public class ExamplePerson extends Example {
 	}
 
 	/**
-	 * Anonymization method ARX
-	 * 
-	 * @param data
-	 * @throws IOException
-	 */
-	protected static void runAnonymization(Data data) throws IOException {
-		System.out.println("---Before data ANONYMIZATION: " + LocalDateTime.now());
-		anonymizer = new ARXAnonymizer();
-		result = anonymizer.anonymize(data, config);
-		System.out.println("----After data ANONYMIZATION: " + LocalDateTime.now());
-		printResults(data);
-	}
-
-	/**
 	 * Set insensitive attributes 
 	 * @param data
 	 * @return prepared data
@@ -257,6 +245,23 @@ public class ExamplePerson extends Example {
 		data.getDefinition().setDataType(ID, DataType.INTEGER);
 		data.getDefinition().setAttributeType(GUARDIANSHIP, AttributeType.INSENSITIVE_ATTRIBUTE);
 		data.getDefinition().setDataType(GUARDIANSHIP, DataType.INTEGER);
+		return data;
+	}
+	
+	/**
+	 * Set quasi identifiers for attributes
+	 * @param data
+	 * @return prepared data
+	 */
+	protected static Data setQuasiIdentifiers(Data data) {
+		createHierarchy(data, OFFICIAL_NAME, DataType.STRING);
+		createHierarchy(data, ORIGINAL_NAME, DataType.STRING);
+		createHierarchy(data, FIRST_NAME, DataType.STRING);
+		createHierarchySex(data);
+		createHierarchyCountry(data, COUNTRY_OF_ORIGIN);
+		createHierarchyCountry(data, NATIONALITY);
+		data = setQuasiIdentifiersDate(data);
+		data = setQuasiIdentifiersInteger(data);
 		return data;
 	}
 
@@ -451,11 +456,48 @@ public class ExamplePerson extends Example {
 	}
 
 	/**
+	 * Anonymization method ARX
+	 * 
+	 * @param data
+	 * @throws IOException
+	 */
+	protected static void runAnonymization(Data data) throws IOException {
+		System.out.println("---Before data ANONYMIZATION: " + LocalDateTime.now());
+		anonymizer = new ARXAnonymizer();
+		result = anonymizer.anonymize(data, config);
+		System.out.println("----After data ANONYMIZATION: " + LocalDateTime.now());
+		
+		// Check heuristic
+		System.out.println("Heuristic search threshold (config.getHeuristicSearchThreshold()): " + config.getHeuristicSearchThreshold() + ", ARXLattice.size(): " + result.getLattice().getSize());
+		System.out.println("Heuristic search? ARXLattice.size(): " + result.getLattice().getSize() + ", config.getHeuristicSearchThreshold()): " + config.getHeuristicSearchThreshold());
+		
+		// Print info
+		printResult(result, data);
+		System.out.println();
+		
+		// Print result of global recoding
+        DataHandle optimum = result.getOutput(false);
+        System.out.println(" - Global recoding:");
+        printHandleFirst(optimum);
+        // Now apply local recoding to the result
+        try {
+        	// Print result of local recoding
+            System.out.println(" - Local recoding:");
+            printHandleFirst(optimum);
+            
+        	result.optimizeIterativeFast(optimum, oMin);
+		} catch (RollbackRequiredException e) {
+			// This part is important to ensure that privacy is preserved, even in case of exceptions
+            optimum = result.getOutput();
+		}
+	}
+	
+	/**
 	 * Print data input before anonymization
 	 * 
 	 * @param data
 	 */
-	protected static void printInput(Data data) {
+	private static void printInput(Data data) {
 		System.out.println("------------------Input data: ");
 		Iterator<String[]> inputIterator = data.getHandle().iterator();
 		for (int i = 0; i < 20; i++) {
@@ -463,25 +505,16 @@ public class ExamplePerson extends Example {
 		}
 	}
 
-	/**
-	 * Print data output after anonymization
-	 * 
-	 * @param data
-	 */
-	protected static void printResults(Data data) {
-		// Print info
-		printResult(result, data);
-		System.out.println();
-
+	protected static void printHandleFirst(DataHandle handle) {
 		// Process results
 		System.out.println("-------------Transformed data: ");
-		Iterator<String[]> transformed = result.getOutput(false).iterator();
-		for (int i = 0; i < 100; i++) {
+        final Iterator<String[]> itHandle = handle.iterator();
+		for (int i = 0; i < 200; i++) {
 			System.out.print(" ");
-			System.out.println(Arrays.toString(transformed.next()));
+			System.out.println(Arrays.toString(itHandle.next()));
 		}
 	}
-
+	
 	/**
 	 * Generates a random string for transformation
 	 * @return random char a-z
