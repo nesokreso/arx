@@ -20,10 +20,8 @@ package org.deidentifier.arx.examples.person;
 import org.deidentifier.arx.ARXConfiguration;
 import org.deidentifier.arx.AttributeType;
 import org.deidentifier.arx.Data;
-import org.deidentifier.arx.DataType;
 import org.deidentifier.arx.criteria.DDisclosurePrivacy;
 import org.deidentifier.arx.criteria.KAnonymity;
-import org.deidentifier.arx.criteria.RecursiveCLDiversity;
 import org.deidentifier.arx.metric.Metric;
 
 /**
@@ -31,24 +29,20 @@ import org.deidentifier.arx.metric.Metric;
  * 
  * @author Nenad Jevdjenic
  */
-public class ExamplePersonDDisclosurePrivacy extends ExamplePerson {
+public class ExamplePersonDDisclosurePrivacy extends ExamplePersonKAnonymity {
 	/**
 	 * Entry point.
 	 */
 	public static void main(String[] args) {
 		try {
 			Data data = csvInit26AttrLarge();
-			
 			data = setInsensitiveAttr(data);
-			data = setQuasiIdentifiersString(data);
-			setMicroAggregation(data, DATE_OF_BIRTH, DataType.DATE);
+			data = setQuasiIdentifiers(data);
+			setKAnonymity();
 			
-	        data.getDefinition().setAttributeType(PHONE_NUMBER, AttributeType.SENSITIVE_ATTRIBUTE);
-	        config = ARXConfiguration.create();
-			config.addPrivacyModel(new KAnonymity(2));
-			config.setSuppressionLimit(1);
-			config.setQualityModel(Metric.createEntropyMetric());
-	        config.addPrivacyModel(new DDisclosurePrivacy(PHONE_NUMBER, 3d));
+	        data.getDefinition().setAttributeType(SECOND_PLACE_OF_ORIGIN_NAME, AttributeType.SENSITIVE_ATTRIBUTE);
+	        config.addPrivacyModel(new DDisclosurePrivacy(SECOND_PLACE_OF_ORIGIN_NAME, 3d));
+
 	        runAnonymization(data);
 		} catch (Exception e) {
 			System.out.println(e);
