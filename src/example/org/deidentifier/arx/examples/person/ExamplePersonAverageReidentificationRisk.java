@@ -25,7 +25,7 @@ import org.deidentifier.arx.criteria.AverageReidentificationRisk;
  * This class represents an example for person data anonymized with the Average Reidentification Risk privacy model. 
  * @author Nenad Jevdjenic
  */
-public class ExamplePersonAverageReidentificationRiskAnonymization extends ExamplePerson {
+public class ExamplePersonAverageReidentificationRisk extends ExamplePerson {
 	/**
 	 * Entry point.
 	 */
