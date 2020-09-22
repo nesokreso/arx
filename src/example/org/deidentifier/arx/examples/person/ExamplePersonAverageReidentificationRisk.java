@@ -34,6 +34,8 @@ public class ExamplePersonAverageReidentificationRisk extends ExamplePerson {
 			Data data = csvInit26AttrLarge();
 			data = setInsensitiveAttr(data);
 			data = setQuasiIdentifiers(data);
+			data = setQuasiIdentifiersDate(data);
+			data = setQuasiIdentifiersInteger(data);
 			config = ARXConfiguration.create();
 			config.addPrivacyModel(new AverageReidentificationRisk(0.94d));
 	        config.setSuppressionLimit(1d);

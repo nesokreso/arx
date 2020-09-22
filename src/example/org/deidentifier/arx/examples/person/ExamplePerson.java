@@ -262,8 +262,6 @@ public class ExamplePerson extends Example {
 		createHierarchyCountry(data, NATIONALITY);
 		createHierarchyCanton(data, MANDATOR);
 		createHierarchyLanguage(data, LANGUAGE);
-		data = setQuasiIdentifiersDate(data);
-		data = setQuasiIdentifiersInteger(data);
 		return data;
 	}
 
@@ -505,7 +503,7 @@ public class ExamplePerson extends Example {
 		// Process results
 		System.out.println("-------------Transformed data: ");
         final Iterator<String[]> itHandle = handle.iterator();
-		for (int i = 0; i < 200; i++) {
+		for (int i = 0; i < 20; i++) {
 			System.out.print(" ");
 			System.out.println(Arrays.toString(itHandle.next()));
 		}

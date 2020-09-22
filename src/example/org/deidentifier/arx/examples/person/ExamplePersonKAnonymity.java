@@ -33,14 +33,21 @@ public class ExamplePersonKAnonymity extends ExamplePerson {
 	public static void main(String[] args) {
 		try {
 			Data data = csvInit26AttrLarge();
-			data = setInsensitiveAttr(data);
-			data = setQuasiIdentifiers(data);
+			data = prepareAttributesKAnonymity(data);
 			setKAnonymity();
 			
 			runAnonymization(data);
 		} catch (Exception e) {
 			System.out.println(e);
 		}
+	}
+	
+	protected static Data prepareAttributesKAnonymity(Data data) {
+		data = setInsensitiveAttr(data);
+		data = setQuasiIdentifiers(data);
+		data = setQuasiIdentifiersDate(data);
+		data = setQuasiIdentifiersInteger(data);
+		return data;
 	}
 	
 	protected static void setKAnonymity() {

@@ -36,6 +36,8 @@ public class ExamplePersonSampleUniqueness extends ExamplePerson {
 			Data data = csvInit26AttrLarge();
 			data = setInsensitiveAttr(data);
 			data = setQuasiIdentifiers(data);
+			data = setQuasiIdentifiersDate(data);
+			data = setQuasiIdentifiersInteger(data);
 			config = ARXConfiguration.create(1d, Metric.createAECSMetric());
 			config.addPrivacyModel(new SampleUniqueness(0.7d));
 
