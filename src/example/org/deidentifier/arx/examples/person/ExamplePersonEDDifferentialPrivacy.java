@@ -18,12 +18,14 @@
 package org.deidentifier.arx.examples.person;
 
 import org.deidentifier.arx.ARXConfiguration;
+import org.deidentifier.arx.AttributeType;
 import org.deidentifier.arx.Data;
 import org.deidentifier.arx.DataGeneralizationScheme;
 import org.deidentifier.arx.DataType;
 import org.deidentifier.arx.ARXConfiguration.SearchStepSemantics;
 import org.deidentifier.arx.DataGeneralizationScheme.GeneralizationDegree;
 import org.deidentifier.arx.criteria.EDDifferentialPrivacy;
+import org.deidentifier.arx.criteria.EntropyLDiversity;
 import org.deidentifier.arx.metric.Metric;
 
 /**
@@ -54,6 +56,8 @@ public class ExamplePersonEDDifferentialPrivacy extends ExamplePerson {
 //			setEDDifferentialPrivacy(2d, 1E-5d, null, true, 50, 0.2, Metric.createLossMetric(), 1d);
 //			setEDDifferentialPrivacy(2d, 1E-5d, null, true, 100, 1d, Metric.createClassificationMetric(), 1d);
 			setEDDifferentialPrivacy(2d, 1E-6d, DataGeneralizationScheme.create(GeneralizationDegree.MEDIUM_HIGH), true, 10, 0.1, Metric.createClassificationMetric(), 1d);
+			data.getDefinition().setAttributeType(PLACE_OF_ORIGIN_NAME, AttributeType.SENSITIVE_ATTRIBUTE);
+	        config.addPrivacyModel(new EntropyLDiversity(PLACE_OF_ORIGIN_NAME, 1));
 			runAnonymization(data);
 		} catch (Exception e) {
 			System.out.println(e);
