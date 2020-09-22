@@ -20,6 +20,7 @@ package org.deidentifier.arx.examples.person;
 import org.deidentifier.arx.ARXConfiguration;
 import org.deidentifier.arx.Data;
 import org.deidentifier.arx.DataGeneralizationScheme;
+import org.deidentifier.arx.DataType;
 import org.deidentifier.arx.ARXConfiguration.SearchStepSemantics;
 import org.deidentifier.arx.DataGeneralizationScheme.GeneralizationDegree;
 import org.deidentifier.arx.criteria.EDDifferentialPrivacy;
@@ -39,6 +40,11 @@ public class ExamplePersonEDDifferentialPrivacy extends ExamplePerson {
 			Data data = csvInit26AttrLarge();
 			data = setInsensitiveAttr(data);
 			data = setQuasiIdentifiers(data);
+			createHierarchy(data, DATE_OF_BIRTH, DataType.DATE);
+			createHierarchy(data, DATE_OF_DEATH, DataType.DATE);
+			createHierarchy(data, PHONE_NUMBER, DataType.INTEGER);
+			createHierarchy(data, CURRENT_ZIP_CODE, DataType.INTEGER);
+			createHierarchy(data, CELL_NUMBER, DataType.INTEGER);
 			
 			data.getDefinition().setResponseVariable(SEX, true);
 			data.getDefinition().setResponseVariable(OFFICIAL_NAME, true);

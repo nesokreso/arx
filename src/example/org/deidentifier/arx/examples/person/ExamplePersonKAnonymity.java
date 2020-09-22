@@ -57,6 +57,6 @@ public class ExamplePersonKAnonymity extends ExamplePerson {
 		config.setHeuristicSearchStepLimit(Integer.MAX_VALUE);
 		config.addPrivacyModel(new KAnonymity(2));
 		config.setSuppressionLimit(1);
-//		config.setHeuristicSearchThreshold(500);
+		config.setHeuristicSearchThreshold(100);
 	}
 }
