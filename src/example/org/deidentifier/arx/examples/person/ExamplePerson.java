@@ -503,7 +503,7 @@ public class ExamplePerson extends Example {
 		// Process results
 		System.out.println("-------------Transformed data: ");
         final Iterator<String[]> itHandle = handle.iterator();
-		for (int i = 0; i < 20; i++) {
+		for (int i = 0; i < 90; i++) {
 			System.out.print(" ");
 			System.out.println(Arrays.toString(itHandle.next()));
 		}

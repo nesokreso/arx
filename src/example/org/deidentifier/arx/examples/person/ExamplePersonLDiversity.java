@@ -38,7 +38,7 @@ public class ExamplePersonLDiversity extends ExamplePersonKAnonymity {
 			setKAnonymity();
 			
 	        data.getDefinition().setAttributeType(PLACE_OF_ORIGIN_NAME, AttributeType.SENSITIVE_ATTRIBUTE);
-	        config.addPrivacyModel(new EntropyLDiversity(PLACE_OF_ORIGIN_NAME, 3));
+	        config.addPrivacyModel(new EntropyLDiversity(PLACE_OF_ORIGIN_NAME, 1));
 	        
 	        runAnonymization(data);
 		} catch (Exception e) {

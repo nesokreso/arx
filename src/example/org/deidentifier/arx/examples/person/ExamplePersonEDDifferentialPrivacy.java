@@ -19,7 +19,9 @@ package org.deidentifier.arx.examples.person;
 
 import org.deidentifier.arx.ARXConfiguration;
 import org.deidentifier.arx.Data;
+import org.deidentifier.arx.DataGeneralizationScheme;
 import org.deidentifier.arx.ARXConfiguration.SearchStepSemantics;
+import org.deidentifier.arx.DataGeneralizationScheme.GeneralizationDegree;
 import org.deidentifier.arx.criteria.EDDifferentialPrivacy;
 import org.deidentifier.arx.metric.Metric;
 
@@ -42,7 +44,10 @@ public class ExamplePersonEDDifferentialPrivacy extends ExamplePerson {
 			data.getDefinition().setResponseVariable(OFFICIAL_NAME, true);
 			data.getDefinition().setResponseVariable(FIRST_NAME, true);
 
-			setEDDifferentialPrivacy(Metric.createClassificationMetric(), 2d, 1d, 1E-5d, 5);
+//			setEDDifferentialPrivacy(Metric.createClassificationMetric(), 2d, 1d, 1E-5d, 5);
+			config = ARXConfiguration.create(1d, Metric.createLossMetric(0.05d));
+			config.addPrivacyModel(new EDDifferentialPrivacy(1.0d, 1E-6d, DataGeneralizationScheme.create(GeneralizationDegree.MEDIUM_HIGH), true));
+			config.setHeuristicSearchThreshold(1);
 			runAnonymization(data);
 		} catch (Exception e) {
 			System.out.println(e);
