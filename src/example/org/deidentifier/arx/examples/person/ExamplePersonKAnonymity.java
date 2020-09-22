@@ -19,6 +19,7 @@ package org.deidentifier.arx.examples.person;
 
 import org.deidentifier.arx.ARXConfiguration;
 import org.deidentifier.arx.Data;
+import org.deidentifier.arx.DataType;
 import org.deidentifier.arx.criteria.KAnonymity;
 
 /**
@@ -45,7 +46,8 @@ public class ExamplePersonKAnonymity extends ExamplePerson {
 	protected static Data prepareAttributesKAnonymity(Data data) {
 		data = setInsensitiveAttr(data);
 		data = setQuasiIdentifiers(data);
-		data = setQuasiIdentifiersDate(data);
+		setMicroAggregation(data, DATE_OF_BIRTH, DataType.DATE);
+		setMicroAggregation(data, DATE_OF_DEATH, DataType.DATE);
 		data = setQuasiIdentifiersInteger(data);
 		return data;
 	}
@@ -55,6 +57,6 @@ public class ExamplePersonKAnonymity extends ExamplePerson {
 		config.setHeuristicSearchStepLimit(Integer.MAX_VALUE);
 		config.addPrivacyModel(new KAnonymity(2));
 		config.setSuppressionLimit(1);
-		config.setHeuristicSearchThreshold(100);
+//		config.setHeuristicSearchThreshold(500);
 	}
 }

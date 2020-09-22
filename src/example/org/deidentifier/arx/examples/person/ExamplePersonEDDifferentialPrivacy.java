@@ -45,21 +45,24 @@ public class ExamplePersonEDDifferentialPrivacy extends ExamplePerson {
 			data.getDefinition().setResponseVariable(FIRST_NAME, true);
 
 //			setEDDifferentialPrivacy(Metric.createClassificationMetric(), 2d, 1d, 1E-5d, 5);
-			config = ARXConfiguration.create(1d, Metric.createLossMetric(0.05d));
-			config.addPrivacyModel(new EDDifferentialPrivacy(1.0d, 1E-6d, DataGeneralizationScheme.create(GeneralizationDegree.MEDIUM_HIGH), true));
-			config.setHeuristicSearchThreshold(1);
+//			setEDDifferentialPrivacy(2d, 1E-5d, null, true, 50, 0.2, Metric.createLossMetric(), 1d);
+//			setEDDifferentialPrivacy(2d, 1E-5d, null, true, 100, 1d, Metric.createClassificationMetric(), 1d);
+			setEDDifferentialPrivacy(2d, 1E-6d, DataGeneralizationScheme.create(GeneralizationDegree.MEDIUM_HIGH), true, 10, 0.1, Metric.createClassificationMetric(), 1d);
 			runAnonymization(data);
 		} catch (Exception e) {
 			System.out.println(e);
 		}
 	}
-	
-	protected static ARXConfiguration setEDDifferentialPrivacy(Metric<?> metric, double epsilon, double searchBudget,
-			double delta, int searchSteps) {
+
+	protected static ARXConfiguration setEDDifferentialPrivacy(double epsilon, double delta,
+			DataGeneralizationScheme dgs, boolean deterministic, int searchSteps, double searchBudget, Metric<?> metric,
+			double suppressionLimit) {
 		config = ARXConfiguration.create(1d, metric);
-		config.addPrivacyModel(new EDDifferentialPrivacy(epsilon, delta, null, true));
+		config.addPrivacyModel(new EDDifferentialPrivacy(epsilon, delta, null, deterministic));
 		config.setDPSearchBudget(searchBudget);
+		config.setHeuristicSearchThreshold(1);
 		config.setHeuristicSearchStepLimit(searchSteps, SearchStepSemantics.EXPANSIONS);
+		config.setHeuristicSearchTimeLimit(120000);
 		return config;
 	}
-}
+}	

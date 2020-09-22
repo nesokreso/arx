@@ -288,19 +288,6 @@ public class ExamplePerson extends Example {
 	}
 	
 	/**
-	 * Set quasi identifiers for attributes of type DATE
-	 * @param data
-	 * @return prepared data
-	 */
-	protected static Data setQuasiIdentifiersDate(Data data) {
-		setMicroAggregation(data, DATE_OF_BIRTH, DataType.DATE);
-		setMicroAggregation(data, DATE_OF_DEATH, DataType.DATE);
-		setMicroAggregation(data, LAST_MEDICAL_CHECKUP, DataType.DATE);
-		setMicroAggregation(data, NEXT_MEDICAL_CHECKUP, DataType.DATE);
-		return data;
-	}
-	
-	/**
 	 * Set quasi identifiers for attributes of type INTEGER
 	 * @param data
 	 * @return prepared data
@@ -503,7 +490,7 @@ public class ExamplePerson extends Example {
 		// Process results
 		System.out.println("-------------Transformed data: ");
         final Iterator<String[]> itHandle = handle.iterator();
-		for (int i = 0; i < 90; i++) {
+		for (int i = 0; i < 120; i++) {
 			System.out.print(" ");
 			System.out.println(Arrays.toString(itHandle.next()));
 		}
