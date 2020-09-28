@@ -363,7 +363,7 @@ public class ExamplePerson extends Example {
 		for (String l : Locale.getISOLanguages()) {
 			lang.add(l, "D");
 		}
-		lang.add("A", "F");lang.add("B", "F");lang.add("C", "F");lang.add("D", "F");lang.add("F", "F");lang.add("F", "F");lang.add("G", "F");
+		lang.add("A", "F");lang.add("B", "F");lang.add("C", "F");lang.add("D", "F");lang.add("E", "F");lang.add("F", "F");lang.add("G", "F");
 		lang.add("H", "D");lang.add("I", "D");lang.add("J", "D");lang.add("K", "D");lang.add("L", "D");lang.add("M", "D");lang.add("N", "D");
 		lang.add("O", "F");lang.add("P", "F");lang.add("Q", "F");lang.add("R", "F");lang.add("S", "F");lang.add("T", "F");lang.add("U", "F");
 		lang.add("V", "I");lang.add("W", "I");lang.add("X", "I");lang.add("Y", "I");lang.add("Z", "I");
