@@ -254,9 +254,9 @@ public class ExamplePerson extends Example {
 	 * @return prepared data
 	 */
 	protected static Data setQuasiIdentifiers(Data data) {
-		createHierarchy(data, OFFICIAL_NAME, DataType.STRING);
-		createHierarchy(data, ORIGINAL_NAME, DataType.STRING);
-		createHierarchy(data, FIRST_NAME, DataType.STRING);
+		createHierarchyString(data, OFFICIAL_NAME, DataType.STRING);
+		createHierarchyString(data, ORIGINAL_NAME, DataType.STRING);
+		createHierarchyString(data, FIRST_NAME, DataType.STRING);
 		createHierarchySex(data);
 		createHierarchyCountry(data, COUNTRY_OF_ORIGIN);
 		createHierarchyCountry(data, NATIONALITY);
@@ -271,19 +271,19 @@ public class ExamplePerson extends Example {
 	 * @return prepared data
 	 */
 	protected static Data setQuasiIdentifiersString(Data data) {
-		createHierarchy(data, ORGANISATION_NAME, DataType.STRING);
-		createHierarchy(data, ORGANISATION_ADDITIONAL_NAME, DataType.STRING);
-		createHierarchy(data, DEPARTMENT, DataType.STRING);
-		createHierarchy(data, OFFICIAL_NAME, DataType.STRING);
-		createHierarchy(data, ORIGINAL_NAME, DataType.STRING);
-		createHierarchy(data, FIRST_NAME, DataType.STRING);
-		createHierarchy(data, PLACE_OF_ORIGIN_NAME, DataType.STRING);
-		createHierarchy(data, SECOND_PLACE_OF_ORIGIN_NAME, DataType.STRING);
-		createHierarchy(data, PLACE_OF_BIRTH_COUNTRY, DataType.STRING);
-		createHierarchy(data, SEX, DataType.STRING);
-		createHierarchy(data, REMARK, DataType.STRING);
-		createHierarchy(data, EMAIL, DataType.STRING);
-		createHierarchy(data, CURRENT_TOWN, DataType.STRING);
+		createHierarchyString(data, ORGANISATION_NAME, DataType.STRING);
+		createHierarchyString(data, ORGANISATION_ADDITIONAL_NAME, DataType.STRING);
+		createHierarchyString(data, DEPARTMENT, DataType.STRING);
+		createHierarchyString(data, OFFICIAL_NAME, DataType.STRING);
+		createHierarchyString(data, ORIGINAL_NAME, DataType.STRING);
+		createHierarchyString(data, FIRST_NAME, DataType.STRING);
+		createHierarchyString(data, PLACE_OF_ORIGIN_NAME, DataType.STRING);
+		createHierarchyString(data, SECOND_PLACE_OF_ORIGIN_NAME, DataType.STRING);
+		createHierarchyString(data, PLACE_OF_BIRTH_COUNTRY, DataType.STRING);
+		createHierarchyString(data, SEX, DataType.STRING);
+		createHierarchyString(data, REMARK, DataType.STRING);
+		createHierarchyString(data, EMAIL, DataType.STRING);
+		createHierarchyString(data, CURRENT_TOWN, DataType.STRING);
 		return data;
 	}
 	
@@ -308,7 +308,7 @@ public class ExamplePerson extends Example {
 	 * @param dataType
 	 * @return Hierarchy for attribute transformation
 	 */
-	protected static HierarchyBuilderRedactionBased<?> createHierarchy(Data data, String attribute,
+	protected static HierarchyBuilderRedactionBased<?> createHierarchyString(Data data, String attribute,
 			DataType<?> dataType) {
 		HierarchyBuilderRedactionBased<?> builder = HierarchyBuilderRedactionBased.create(Order.RIGHT_TO_LEFT,
 				Order.RIGHT_TO_LEFT, ' ', generateRandomString());
@@ -316,6 +316,22 @@ public class ExamplePerson extends Example {
 		data.getDefinition().setDataType(attribute, dataType);
 		return builder;
 	}
+	
+	/**
+	 * @param data
+	 * @param attribute
+	 * @param dataType
+	 * @return Hierarchy for attribute transformation
+	 */
+	protected static HierarchyBuilderRedactionBased<?> createHierarchyInteger(Data data, String attribute,
+			DataType<?> dataType) {
+		HierarchyBuilderRedactionBased<?> builder = HierarchyBuilderRedactionBased.create(Order.RIGHT_TO_LEFT,
+				Order.RIGHT_TO_LEFT, ' ', generateRandomInt());
+		data.getDefinition().setAttributeType(attribute, builder);
+		data.getDefinition().setDataType(attribute, dataType);
+		return builder;
+	}
+	
 	
 	/**
 	 * Sets micro aggregation

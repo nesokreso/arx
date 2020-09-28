@@ -36,7 +36,7 @@ public class ExamplePersonDPresence extends ExamplePerson {
 		try {
 			Data data = csvInit26AttrLarge();
 			data = setInsensitiveAttr(data);
-			createHierarchy(data, OFFICIAL_NAME, DataType.STRING);
+			createHierarchyString(data, OFFICIAL_NAME, DataType.STRING);
 
 			// Load csv subset with 20 values which are included in the large csv	
 			Data subsetData = csvInit26AttrSmall();

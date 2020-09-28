@@ -42,11 +42,11 @@ public class ExamplePersonEDDifferentialPrivacy extends ExamplePerson {
 			Data data = csvInit26AttrLarge();
 			data = setInsensitiveAttr(data);
 			data = setQuasiIdentifiers(data);
-			createHierarchy(data, DATE_OF_BIRTH, DataType.DATE);
-			createHierarchy(data, DATE_OF_DEATH, DataType.DATE);
-			createHierarchy(data, PHONE_NUMBER, DataType.INTEGER);
-			createHierarchy(data, CURRENT_ZIP_CODE, DataType.INTEGER);
-			createHierarchy(data, CELL_NUMBER, DataType.INTEGER);
+			createHierarchyString(data, DATE_OF_BIRTH, DataType.DATE);
+			createHierarchyString(data, DATE_OF_DEATH, DataType.DATE);
+			createHierarchyInteger(data, PHONE_NUMBER, DataType.INTEGER);
+			createHierarchyInteger(data, CURRENT_ZIP_CODE, DataType.INTEGER);
+			createHierarchyInteger(data, CELL_NUMBER, DataType.INTEGER);
 			
 			data.getDefinition().setResponseVariable(SEX, true);
 			data.getDefinition().setResponseVariable(OFFICIAL_NAME, true);
