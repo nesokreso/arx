@@ -21,6 +21,7 @@ import org.deidentifier.arx.AttributeType;
 import org.deidentifier.arx.Data;
 import org.deidentifier.arx.AttributeType.Hierarchy.DefaultHierarchy;
 import org.deidentifier.arx.criteria.HierarchicalDistanceTCloseness;
+import org.deidentifier.arx.criteria.OrderedDistanceTCloseness;
 
 /**
  * This class represents an example for person data anonymized with the T-Closeness privacy model.
@@ -41,8 +42,17 @@ public class ExamplePersonTCloseness extends ExamplePersonKAnonymity {
 	        DefaultHierarchy nationHierarchy = createHierarchyCountry(data, NATIONALITY);
 	        data.getDefinition().setAttributeType(COUNTRY_OF_ORIGIN, AttributeType.SENSITIVE_ATTRIBUTE);
 			data.getDefinition().setAttributeType(NATIONALITY, AttributeType.SENSITIVE_ATTRIBUTE);
-	        config.addPrivacyModel(new HierarchicalDistanceTCloseness(COUNTRY_OF_ORIGIN, 0.6d, countryHierarchy));
-	        config.addPrivacyModel(new HierarchicalDistanceTCloseness(NATIONALITY, 0.6d, nationHierarchy));
+			data.getDefinition().setAttributeType(CELL_NUMBER, AttributeType.SENSITIVE_ATTRIBUTE);
+			data.getDefinition().setAttributeType(PHONE_NUMBER, AttributeType.SENSITIVE_ATTRIBUTE);
+			data.getDefinition().setAttributeType(PLACE_OF_ORIGIN_NAME, AttributeType.SENSITIVE_ATTRIBUTE);
+			data.getDefinition().setAttributeType(PLACE_OF_BIRTH_COUNTRY, AttributeType.SENSITIVE_ATTRIBUTE);
+			
+			config.addPrivacyModel(new OrderedDistanceTCloseness(CELL_NUMBER, 0.5));
+			config.addPrivacyModel(new OrderedDistanceTCloseness(PHONE_NUMBER, 0.5));
+			config.addPrivacyModel(new OrderedDistanceTCloseness(PLACE_OF_BIRTH_COUNTRY, 0.5));
+			config.addPrivacyModel(new OrderedDistanceTCloseness(PLACE_OF_ORIGIN_NAME, 0.5));
+			config.addPrivacyModel(new HierarchicalDistanceTCloseness(COUNTRY_OF_ORIGIN, 0.5, countryHierarchy));
+	        config.addPrivacyModel(new HierarchicalDistanceTCloseness(NATIONALITY, 0.5, nationHierarchy));
 	        
 	        runAnonymization(data);
 		} catch (Exception e) {
