@@ -40,21 +40,16 @@ public class ExamplePersonTCloseness extends ExamplePersonKAnonymity {
 			setKAnonymity();
 
 			DefaultHierarchy countryHierarchy = createHierarchyCountry(data, COUNTRY_OF_ORIGIN);
-	        DefaultHierarchy nationHierarchy = createHierarchyCountry(data, NATIONALITY);
 	        data.getDefinition().setAttributeType(COUNTRY_OF_ORIGIN, AttributeType.SENSITIVE_ATTRIBUTE);
-			data.getDefinition().setAttributeType(NATIONALITY, AttributeType.SENSITIVE_ATTRIBUTE);
-			config.addPrivacyModel(new HierarchicalDistanceTCloseness(COUNTRY_OF_ORIGIN, 0.5, countryHierarchy));
-	        config.addPrivacyModel(new HierarchicalDistanceTCloseness(NATIONALITY, 0.5, nationHierarchy));
+	        config.addPrivacyModel(new HierarchicalDistanceTCloseness(COUNTRY_OF_ORIGIN, 0.5, countryHierarchy));
 			data.getDefinition().setAttributeType(CELL_NUMBER, AttributeType.SENSITIVE_ATTRIBUTE);
-			data.getDefinition().setAttributeType(PHONE_NUMBER, AttributeType.SENSITIVE_ATTRIBUTE);
 			config.addPrivacyModel(new OrderedDistanceTCloseness(CELL_NUMBER, 0.5));
+			data.getDefinition().setAttributeType(PHONE_NUMBER, AttributeType.SENSITIVE_ATTRIBUTE);
 			config.addPrivacyModel(new OrderedDistanceTCloseness(PHONE_NUMBER, 0.5));
-			data.getDefinition().setAttributeType(PLACE_OF_ORIGIN_NAME, AttributeType.SENSITIVE_ATTRIBUTE);
 			data.getDefinition().setAttributeType(PLACE_OF_BIRTH_COUNTRY, AttributeType.SENSITIVE_ATTRIBUTE);
 			config.addPrivacyModel(new EqualDistanceTCloseness(PLACE_OF_BIRTH_COUNTRY, 0.5));
-			config.addPrivacyModel(new EqualDistanceTCloseness(PLACE_OF_ORIGIN_NAME, 0.5));
-			
-	        runAnonymization(data);
+
+			runAnonymization(data);
 		} catch (Exception e) {
 			System.out.println(e);
 		}
