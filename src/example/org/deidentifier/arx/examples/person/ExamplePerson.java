@@ -47,8 +47,8 @@ import org.deidentifier.arx.Data;
 import org.deidentifier.arx.DataHandle;
 import org.deidentifier.arx.aggregates.HierarchyBuilderRedactionBased;
 import org.deidentifier.arx.aggregates.HierarchyBuilderRedactionBased.Order;
+import org.deidentifier.arx.aggregates.StatisticsEquivalenceClasses;
 import org.deidentifier.arx.examples.Example;
-import org.deidentifier.arx.exceptions.RollbackRequiredException;
 
 /**
  * This is the base class for many examples based on CSV and DB input data with
@@ -471,23 +471,17 @@ public class ExamplePerson extends Example {
 		
 		// Print info
 		printResult(result, data);
-		System.out.println();
+		StatisticsEquivalenceClasses stat = result.getOutput(result.getGlobalOptimum(), false).getStatistics().getEquivalenceClassStatistics();
+		System.out.print(stat.getAverageEquivalenceClassSize() + ", ");
+		System.out.print(stat.getMaximalEquivalenceClassSize() + ", ");
+		System.out.print(stat.getMinimalEquivalenceClassSize() + ", ");
+		System.out.print(stat.getNumberOfEquivalenceClasses() + ", ");
+		System.out.print(stat.getNumberOfRecords() + ", ");
+		System.out.print(stat.getNumberOfSuppressedRecords());
 		
-		// Print result of global recoding
+		// Print results
         DataHandle optimum = result.getOutput(false);
-        System.out.println(" - Global recoding:");
-        printHandleFirst(optimum);
-        // Now apply local recoding to the result
-        try {
-        	// Print result of local recoding
-            System.out.println(" - Local recoding:");
-            printHandleFirst(optimum);
-            
-        	result.optimizeIterativeFast(optimum, oMin);
-		} catch (RollbackRequiredException e) {
-			// This part is important to ensure that privacy is preserved, even in case of exceptions
-            optimum = result.getOutput();
-		}
+        printOutput(optimum);
 	}
 	
 	/**
@@ -503,7 +497,7 @@ public class ExamplePerson extends Example {
 		}
 	}
 
-	protected static void printHandleFirst(DataHandle handle) {
+	protected static void printOutput(DataHandle handle) {
 		// Process results
 		System.out.println("-------------Transformed data: ");
         final Iterator<String[]> itHandle = handle.iterator();
