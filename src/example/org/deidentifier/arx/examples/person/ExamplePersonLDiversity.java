@@ -40,12 +40,12 @@ public class ExamplePersonLDiversity extends ExamplePersonKAnonymity {
 //			data = prepareAttributesKAnonymity(data);
 			setKAnonymity();
 			
-			data.getDefinition().setAttributeType(CELL_NUMBER, AttributeType.SENSITIVE_ATTRIBUTE);
-			config.addPrivacyModel(new RecursiveCLDiversity(CELL_NUMBER, 3, 1));
-			data.getDefinition().setAttributeType(PHONE_NUMBER, AttributeType.SENSITIVE_ATTRIBUTE);
-			config.addPrivacyModel(new DistinctLDiversity(PHONE_NUMBER, 1));
-			data.getDefinition().setAttributeType(PLACE_OF_ORIGIN_NAME, AttributeType.SENSITIVE_ATTRIBUTE);
-	        config.addPrivacyModel(new EntropyLDiversity(PLACE_OF_ORIGIN_NAME, 1));
+			data.getDefinition().setAttributeType(MANDATOR, AttributeType.SENSITIVE_ATTRIBUTE);
+			config.addPrivacyModel(new RecursiveCLDiversity(MANDATOR, 3, 2));
+//			data.getDefinition().setAttributeType(NATIONALITY, AttributeType.SENSITIVE_ATTRIBUTE);
+//			config.addPrivacyModel(new DistinctLDiversity(NATIONALITY, 2));
+//			data.getDefinition().setAttributeType(COUNTRY_OF_ORIGIN, AttributeType.SENSITIVE_ATTRIBUTE);
+//	        config.addPrivacyModel(new EntropyLDiversity(COUNTRY_OF_ORIGIN, 1));
 	        
 	        runAnonymization(data);
 		} catch (Exception e) {
