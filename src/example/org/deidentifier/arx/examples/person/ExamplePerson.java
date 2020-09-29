@@ -462,9 +462,8 @@ public class ExamplePerson extends Example {
 		result = anonymizer.anonymize(data, config);
 		System.out.println("----After data ANONYMIZATION: " + LocalDateTime.now());
 		
-		// Check heuristic
+		// Check heuristic search
 		System.out.println("Heuristic search threshold (config.getHeuristicSearchThreshold()): " + config.getHeuristicSearchThreshold() + ", ARXLattice.size(): " + result.getLattice().getSize());
-		System.out.println("Heuristic search? ARXLattice.size(): " + result.getLattice().getSize() + ", config.getHeuristicSearchThreshold()): " + config.getHeuristicSearchThreshold());
 		
 		// Print info
 		printResult(result, data);
