@@ -54,7 +54,6 @@ public class ExamplePersonKAnonymity extends ExamplePerson {
 	
 	protected static void setKAnonymity() {
 		config = ARXConfiguration.create();
-		config.setHeuristicSearchStepLimit(Integer.MAX_VALUE);
 		config.addPrivacyModel(new KAnonymity(2));
 		config.setSuppressionLimit(1);
 		config.setHeuristicSearchThreshold(1000);
