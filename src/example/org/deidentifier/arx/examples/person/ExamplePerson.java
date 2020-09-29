@@ -354,6 +354,7 @@ public class ExamplePerson extends Example {
 	}
 
 	/**
+	 * Hierarchy for possible sex values
 	 * @param data
 	 */
 	protected static void createHierarchySex(Data data) {
@@ -369,6 +370,7 @@ public class ExamplePerson extends Example {
 	}
 
 	/**
+	 * Hierarchy for languages
 	 * @param data
 	 * @param attribute
 	 */
@@ -388,6 +390,7 @@ public class ExamplePerson extends Example {
 	}
 	
 	/**
+	 * Hierarchy for cantons in Switzerland
 	 * @param data
 	 * @param attribute
 	 */
@@ -396,19 +399,20 @@ public class ExamplePerson extends Example {
 		canton.add("M", "ZH");canton.add("##", "ZH");canton.add("AG", "ZH");canton.add("AI", "ZH");canton.add("AR", "ZH");canton.add("AS", "ZH");
 		canton.add("BA", "GE");canton.add("BE", "GE");canton.add("BL", "GE");canton.add("BP", "GE");canton.add("BS", "GE");canton.add("BU", "GE");
 		canton.add("FL", "BS");canton.add("FR", "BS");canton.add("GE", "BS");canton.add("GL", "BS");canton.add("GR", "BS");canton.add("JU", "BS");
-		canton.add("LU", "ZG");canton.add("NE", "ZG");canton.add("NW", "ZG");canton.add("OW", "ZG");canton.add("PT", "ZG");canton.add("RP", "ZG");
+		canton.add("LU", "ZH");canton.add("NE", "ZH");canton.add("NW", "ZH");canton.add("OW", "ZH");canton.add("PT", "ZG");canton.add("RP", "ZG");
 		canton.add("SG", "SO");canton.add("SH", "SO");canton.add("SO", "SO");canton.add("SZ", "SO");canton.add("TG", "SO");canton.add("TI", "SO");
 		canton.add("UR", "ZH");canton.add("VD", "ZH");canton.add("VS", "ZH");canton.add("ZG", "ZH");canton.add("ZH", "ZH");canton.add("12", "ZH");
-		canton.add("ZU", "SH");canton.add("null", "BE");canton.add("", "BE");canton.add("NULL", "BE");
+		canton.add("ZU", "ZH");canton.add("null", "BS");canton.add("", "BS");canton.add("NULL", "BS");
 		data.getDefinition().setAttributeType(attribute, canton);
 		data.getDefinition().setDataType(attribute, DataType.STRING);
 		data.getDefinition().setHierarchy(attribute, canton);
 	}
 
 	/**
+	 * Hierarchy for countries
 	 * @param data
 	 * @param attribute
-	 * @return hierarchy for countries
+	 * @return hierarchy
 	 */
 	protected static DefaultHierarchy createHierarchyCountry(Data data, String attribute) {
 		DefaultHierarchy country = Hierarchy.create();
