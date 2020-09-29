@@ -37,9 +37,9 @@ public class ExamplePersonPopulationUniqueness extends ExamplePerson {
 		try {
 			Data data = csvInit26AttrLarge();
 			data = setInsensitiveAttr(data);
-			createHierarchyString(data, OFFICIAL_NAME, DataType.STRING);
-			createHierarchyString(data, ORIGINAL_NAME, DataType.STRING);
-			createHierarchyString(data, FIRST_NAME, DataType.STRING);
+			createHierarchyString(data, OFFICIAL_NAME);
+			createHierarchyString(data, ORIGINAL_NAME);
+			createHierarchyString(data, FIRST_NAME);
 			setMicroAggregation(data, DATE_OF_BIRTH, DataType.DATE);
 			setMicroAggregation(data, DATE_OF_DEATH, DataType.DATE);
 			ARXPopulationModel europeanPopulationmodel = ARXPopulationModel.create(Region.EUROPE);
