@@ -41,6 +41,7 @@ public class ExamplePersonEDDifferentialPrivacy extends ExamplePerson {
 		try {
 			Data data = csvInit26AttrLarge();
 			data = setInsensitiveAttr(data);
+			data.getDefinition().setResponseVariable(ID, true);
 			data = setQuasiIdentifiers(data);
 			createHierarchyString(data, DATE_OF_BIRTH);
 			createHierarchyString(data, DATE_OF_DEATH);
@@ -48,16 +49,7 @@ public class ExamplePersonEDDifferentialPrivacy extends ExamplePerson {
 			createHierarchyInteger(data, CURRENT_ZIP_CODE);
 			createHierarchyInteger(data, CELL_NUMBER);
 			
-			data.getDefinition().setResponseVariable(SEX, true);
-			data.getDefinition().setResponseVariable(OFFICIAL_NAME, true);
-			data.getDefinition().setResponseVariable(FIRST_NAME, true);
-
-//			setEDDifferentialPrivacy(Metric.createClassificationMetric(), 2d, 1d, 1E-5d, 5);
-//			setEDDifferentialPrivacy(2d, 1E-5d, null, true, 50, 0.2, Metric.createLossMetric(), 1d);
-//			setEDDifferentialPrivacy(2d, 1E-5d, null, true, 100, 1d, Metric.createClassificationMetric(), 1d);
-			setEDDifferentialPrivacy(2d, 1E-6d, DataGeneralizationScheme.create(GeneralizationDegree.MEDIUM_HIGH), true, 10, 0.1, Metric.createClassificationMetric(), 1d);
-			data.getDefinition().setAttributeType(PLACE_OF_ORIGIN_NAME, AttributeType.SENSITIVE_ATTRIBUTE);
-	        config.addPrivacyModel(new EntropyLDiversity(PLACE_OF_ORIGIN_NAME, 1));
+			setEDDifferentialPrivacy(2d, 0.9d, DataGeneralizationScheme.create(GeneralizationDegree.HIGH), true, 100, 3d);
 			runAnonymization(data);
 		} catch (Exception e) {
 			System.out.println(e);
@@ -65,10 +57,9 @@ public class ExamplePersonEDDifferentialPrivacy extends ExamplePerson {
 	}
 
 	protected static ARXConfiguration setEDDifferentialPrivacy(double epsilon, double delta,
-			DataGeneralizationScheme dgs, boolean deterministic, int searchSteps, double searchBudget, Metric<?> metric,
-			double suppressionLimit) {
-		config = ARXConfiguration.create(1d, metric);
-		config.addPrivacyModel(new EDDifferentialPrivacy(epsilon, delta, null, deterministic));
+			DataGeneralizationScheme dgs, boolean deterministic, int searchSteps, double searchBudget) {
+		config = ARXConfiguration.create();
+		config.addPrivacyModel(new EDDifferentialPrivacy(epsilon, delta, dgs, deterministic));
 		config.setDPSearchBudget(searchBudget);
 		config.setHeuristicSearchThreshold(1);
 		config.setHeuristicSearchStepLimit(searchSteps, SearchStepSemantics.EXPANSIONS);
