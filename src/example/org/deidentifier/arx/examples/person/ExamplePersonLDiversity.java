@@ -35,17 +35,15 @@ public class ExamplePersonLDiversity extends ExamplePersonKAnonymity {
 	public static void main(String[] args) {
 		try {
 			Data data = csvInit26AttrLarge();
-			data = setInsensitiveAttr(data);
-			data = setQuasiIdentifiers(data);
-//			data = prepareAttributesKAnonymity(data);
+			data = prepareAttributesKAnonymity(data);
 			setKAnonymity();
 			
 			data.getDefinition().setAttributeType(MANDATOR, AttributeType.SENSITIVE_ATTRIBUTE);
 			config.addPrivacyModel(new RecursiveCLDiversity(MANDATOR, 3, 2));
-//			data.getDefinition().setAttributeType(NATIONALITY, AttributeType.SENSITIVE_ATTRIBUTE);
-//			config.addPrivacyModel(new DistinctLDiversity(NATIONALITY, 2));
-//			data.getDefinition().setAttributeType(COUNTRY_OF_ORIGIN, AttributeType.SENSITIVE_ATTRIBUTE);
-//	        config.addPrivacyModel(new EntropyLDiversity(COUNTRY_OF_ORIGIN, 1));
+			data.getDefinition().setAttributeType(NATIONALITY, AttributeType.SENSITIVE_ATTRIBUTE);
+			config.addPrivacyModel(new DistinctLDiversity(NATIONALITY, 2));
+			data.getDefinition().setAttributeType(LANGUAGE, AttributeType.SENSITIVE_ATTRIBUTE);
+	        config.addPrivacyModel(new EntropyLDiversity(LANGUAGE, 2));
 	        
 	        runAnonymization(data);
 		} catch (Exception e) {
