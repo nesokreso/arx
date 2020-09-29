@@ -42,8 +42,6 @@ public class ExamplePersonTCloseness extends ExamplePersonKAnonymity {
 			DefaultHierarchy countryHierarchy = createHierarchyCountry(data, COUNTRY_OF_ORIGIN);
 	        data.getDefinition().setAttributeType(COUNTRY_OF_ORIGIN, AttributeType.SENSITIVE_ATTRIBUTE);
 	        config.addPrivacyModel(new HierarchicalDistanceTCloseness(COUNTRY_OF_ORIGIN, 0.5, countryHierarchy));
-			data.getDefinition().setAttributeType(CELL_NUMBER, AttributeType.SENSITIVE_ATTRIBUTE);
-			config.addPrivacyModel(new OrderedDistanceTCloseness(CELL_NUMBER, 0.5));
 			data.getDefinition().setAttributeType(PHONE_NUMBER, AttributeType.SENSITIVE_ATTRIBUTE);
 			config.addPrivacyModel(new OrderedDistanceTCloseness(PHONE_NUMBER, 0.5));
 			data.getDefinition().setAttributeType(PLACE_OF_BIRTH_COUNTRY, AttributeType.SENSITIVE_ATTRIBUTE);
