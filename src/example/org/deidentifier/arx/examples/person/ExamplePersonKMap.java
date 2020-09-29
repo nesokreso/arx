@@ -38,8 +38,8 @@ public class ExamplePersonKMap extends ExamplePersonKAnonymity {
 			data = setInsensitiveAttr(data);
 			data = prepareAttributesKAnonymity(data);
 			
-			ARXPopulationModel europeanPopulationModel = ARXPopulationModel.create(Region.EUROPE);
-			KMap kMap = new KMap(15, 0.2, europeanPopulationModel);
+			ARXPopulationModel europe = ARXPopulationModel.create(Region.EUROPE);
+			KMap kMap = new KMap(2, 0.7, europe);
 			config = ARXConfiguration.create();
 			config.addPrivacyModel(kMap);
 	        config.setSuppressionLimit(1);
