@@ -19,7 +19,9 @@ package org.deidentifier.arx.examples.person;
 
 import org.deidentifier.arx.AttributeType;
 import org.deidentifier.arx.Data;
+import org.deidentifier.arx.criteria.DistinctLDiversity;
 import org.deidentifier.arx.criteria.EntropyLDiversity;
+import org.deidentifier.arx.criteria.RecursiveCLDiversity;
 
 /**
  * This class represents an example for person data anonymized with the L-Diversity privacy model which is based on K-Anonymity.
@@ -34,10 +36,15 @@ public class ExamplePersonLDiversity extends ExamplePersonKAnonymity {
 		try {
 			Data data = csvInit26AttrLarge();
 			data = setInsensitiveAttr(data);
-			data = prepareAttributesKAnonymity(data);
+			data = setQuasiIdentifiers(data);
+//			data = prepareAttributesKAnonymity(data);
 			setKAnonymity();
 			
-	        data.getDefinition().setAttributeType(PLACE_OF_ORIGIN_NAME, AttributeType.SENSITIVE_ATTRIBUTE);
+			data.getDefinition().setAttributeType(CELL_NUMBER, AttributeType.SENSITIVE_ATTRIBUTE);
+			config.addPrivacyModel(new RecursiveCLDiversity(CELL_NUMBER, 3, 1));
+			data.getDefinition().setAttributeType(PHONE_NUMBER, AttributeType.SENSITIVE_ATTRIBUTE);
+			config.addPrivacyModel(new DistinctLDiversity(PHONE_NUMBER, 1));
+			data.getDefinition().setAttributeType(PLACE_OF_ORIGIN_NAME, AttributeType.SENSITIVE_ATTRIBUTE);
 	        config.addPrivacyModel(new EntropyLDiversity(PLACE_OF_ORIGIN_NAME, 1));
 	        
 	        runAnonymization(data);
