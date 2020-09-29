@@ -39,7 +39,7 @@ public class ExamplePersonLDiversity extends ExamplePersonKAnonymity {
 			setKAnonymity();
 			
 			data.getDefinition().setAttributeType(MANDATOR, AttributeType.SENSITIVE_ATTRIBUTE);
-			config.addPrivacyModel(new RecursiveCLDiversity(MANDATOR, 3, 2));
+			config.addPrivacyModel(new RecursiveCLDiversity(MANDATOR, 1.5, 2));
 			data.getDefinition().setAttributeType(NATIONALITY, AttributeType.SENSITIVE_ATTRIBUTE);
 			config.addPrivacyModel(new DistinctLDiversity(NATIONALITY, 2));
 			data.getDefinition().setAttributeType(LANGUAGE, AttributeType.SENSITIVE_ATTRIBUTE);
