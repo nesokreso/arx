@@ -49,7 +49,7 @@ public class ExamplePersonEDDifferentialPrivacy extends ExamplePerson {
 			createHierarchyInteger(data, CURRENT_ZIP_CODE);
 			createHierarchyInteger(data, CELL_NUMBER);
 			
-			setEDDifferentialPrivacy(2d, 0.9d, DataGeneralizationScheme.create(GeneralizationDegree.HIGH), true, 100, 3d);
+			setEDDifferentialPrivacy(2d, 0.9d, DataGeneralizationScheme.create(GeneralizationDegree.HIGH), true, 100);
 			runAnonymization(data);
 		} catch (Exception e) {
 			System.out.println(e);
@@ -57,13 +57,10 @@ public class ExamplePersonEDDifferentialPrivacy extends ExamplePerson {
 	}
 
 	protected static ARXConfiguration setEDDifferentialPrivacy(double epsilon, double delta,
-			DataGeneralizationScheme dgs, boolean deterministic, int searchSteps, double searchBudget) {
+			DataGeneralizationScheme dgs, boolean deterministic, double searchBudget) {
 		config = ARXConfiguration.create();
 		config.addPrivacyModel(new EDDifferentialPrivacy(epsilon, delta, dgs, deterministic));
 		config.setDPSearchBudget(searchBudget);
-		config.setHeuristicSearchThreshold(1);
-		config.setHeuristicSearchStepLimit(searchSteps, SearchStepSemantics.EXPANSIONS);
-		config.setHeuristicSearchTimeLimit(120000);
 		return config;
 	}
 }	
