@@ -18,15 +18,10 @@
 package org.deidentifier.arx.examples.person;
 
 import org.deidentifier.arx.ARXConfiguration;
-import org.deidentifier.arx.AttributeType;
 import org.deidentifier.arx.Data;
 import org.deidentifier.arx.DataGeneralizationScheme;
-import org.deidentifier.arx.DataType;
-import org.deidentifier.arx.ARXConfiguration.SearchStepSemantics;
 import org.deidentifier.arx.DataGeneralizationScheme.GeneralizationDegree;
 import org.deidentifier.arx.criteria.EDDifferentialPrivacy;
-import org.deidentifier.arx.criteria.EntropyLDiversity;
-import org.deidentifier.arx.metric.Metric;
 
 /**
  * This class represents an example for person data anonymized with (ε,δ)-Differential Privacy.

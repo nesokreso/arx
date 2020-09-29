@@ -20,7 +20,6 @@ package org.deidentifier.arx.examples.person;
 import org.deidentifier.arx.ARXConfiguration;
 import org.deidentifier.arx.Data;
 import org.deidentifier.arx.DataSubset;
-import org.deidentifier.arx.DataType;
 import org.deidentifier.arx.criteria.DPresence;
 
 /**
