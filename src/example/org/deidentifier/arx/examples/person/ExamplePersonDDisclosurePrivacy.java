@@ -38,7 +38,7 @@ public class ExamplePersonDDisclosurePrivacy extends ExamplePersonKAnonymity {
 			setKAnonymity();
 			
 	        data.getDefinition().setAttributeType(SECOND_PLACE_OF_ORIGIN_NAME, AttributeType.SENSITIVE_ATTRIBUTE);
-	        config.addPrivacyModel(new DDisclosurePrivacy(SECOND_PLACE_OF_ORIGIN_NAME, 3d));
+	        config.addPrivacyModel(new DDisclosurePrivacy(SECOND_PLACE_OF_ORIGIN_NAME, 4d));
 
 	        runAnonymization(data);
 		} catch (Exception e) {
